@@ -5,15 +5,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1a1a2e">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>TKTC Kartini — SMKN Ile Boleng</title>
 <link rel="manifest" href="manifest.json">
 
 <!-- Firebase SDK (Compat) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 
 <style>
 /* ============================================
@@ -798,22 +800,49 @@ select.form-input { cursor: pointer; }
     </div>
     <div class="auth-card">
       <div class="auth-tabs">
-        <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">Masuk</button>
-        <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">Daftar</button>
-      </div>
+  <button class="auth-tab active" id="to-login">Masuk</button>
+  <button class="auth-tab" id="to-register">Daftar</button>
+</div>
       <div id="auth-msg" class="auth-msg"></div>
 
-      <form id="login-form" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label>Nama Pengguna</label>
-          <input id="login-username" class="form-input" placeholder="misal: ani_siti" required autocomplete="username">
-        </div>
-        <div class="form-group">
-          <label>Kata Sandi</label>
-          <input id="login-password" class="form-input" type="password" placeholder="••••••" required autocomplete="current-password">
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">Masuk</button>
-      </form>
+      <!-- Ganti form login -->
+<form id="login-form">
+  <div class="form-group">
+    <label>Email</label>
+    <input id="login-email" class="form-input" type="email"
+           placeholder="email@contoh.com" required autocomplete="email">
+  </div>
+  <div class="form-group">
+    <label>Kata Sandi</label>
+    <input id="login-pass" class="form-input" type="password"
+           placeholder="••••••" required autocomplete="current-password">
+  </div>
+  <button type="submit" class="btn btn-primary btn-block">Masuk</button>
+</form>
+<form id="register-form" class="hidden">
+  <div class="form-group">
+    <label>Nama Lengkap</label>
+    <input id="reg-name" class="form-input" placeholder="Nama lengkap" required>
+  </div>
+  <div class="form-group">
+    <label>Email</label>
+    <input id="reg-email" class="form-input" type="email"
+           placeholder="email@contoh.com" required autocomplete="email">
+  </div>
+  <div class="form-group">
+    <label>Kata Sandi</label>
+    <input id="reg-pass" class="form-input" type="password"
+           placeholder="minimal 6 karakter" required autocomplete="new-password">
+  </div>
+  <div class="form-group">
+    <label>Peran</label>
+    <select id="reg-role" class="form-input" required>
+      <option value="siswa">Siswa</option>
+      <option value="guru">Guru</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary btn-block">Daftar</button>
+</form>
 
       <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
         <div class="form-group">
@@ -860,9 +889,32 @@ select.form-input { cursor: pointer; }
     </div>
   </header>
 
-  <main id="page-root" class="page-content animate-fade"></main>
+  <main class="page-content animate-fade">
+  <div id="screen-dashboard"></div>
+  <div id="screen-modules" class="hidden"></div>
+  <div id="screen-module-detail" class="hidden"></div>
+  <div id="screen-lesson" class="hidden"></div>
+  <div id="screen-assessment" class="hidden"></div>
+  <div id="screen-baseline" class="hidden"></div>
+  <div id="screen-glosarium" class="hidden"></div>
+  <div id="screen-admin" class="hidden"></div>
+  <div id="screen-result" class="hidden"></div>
+</main>
 
-  <nav id="bottom-nav" class="bottom-nav"></nav>
+  <nav id="bottom-nav" class="bottom-nav">
+  <button class="nav-item active" data-nav="dashboard">
+    <span class="nav-icon">🏠</span> Beranda
+  </button>
+  <button class="nav-item" data-nav="modules">
+    <span class="nav-icon">📚</span> Modul
+  </button>
+  <button class="nav-item" data-nav="glosarium">
+    <span class="nav-icon">📖</span> Glosarium
+  </button>
+  <button class="nav-item" data-nav="admin" data-role="guru">
+    <span class="nav-icon">⚙️</span> Admin
+  </button>
+</nav>
 </div>
 
 <!-- Modal root -->
@@ -1585,7 +1637,7 @@ async function initApp(){
 // LOADER HELPERS
 // ============================================
 function showLoading(on){
-  const el = document.getElementById('loading-screen');
+  const el = document.getElementById('loading-overlay'); // ← PERBAIKAN
   if (!el) return;
   el.classList.toggle('hidden', !on);
 }
@@ -1599,6 +1651,9 @@ function showApp(){
   renderHeader();
   navigateTo('dashboard');
 }
+function serverTime() {
+  return firebase.firestore.FieldValue.serverTimestamp();
+}
 
 // ============================================
 // AUTH
@@ -1611,13 +1666,17 @@ function bindAuthForms(){
 
   toRegister?.addEventListener('click', (e)=>{
     e.preventDefault();
-    document.getElementById('login-box').classList.add('hidden');
-    document.getElementById('register-box').classList.remove('hidden');
+    loginForm.classList.add('hidden');
+    registerForm.classList.remove('hidden');
+    toRegister.classList.add('active');
+    toLogin.classList.remove('active');
   });
   toLogin?.addEventListener('click', (e)=>{
     e.preventDefault();
-    document.getElementById('register-box').classList.add('hidden');
-    document.getElementById('login-box').classList.remove('hidden');
+    registerForm.classList.add('hidden');
+    loginForm.classList.remove('hidden');
+    toLogin.classList.add('active');
+    toRegister.classList.remove('active');
   });
 
   loginForm?.addEventListener('submit', async (e)=>{
@@ -1630,7 +1689,8 @@ function bindAuthForms(){
       showToast('Selamat datang kembali!','success');
     } catch (err){
       showToast(mapAuthError(err.code),'error');
-    } finally { showLoading(false); }
+      showLoading(false); // ← penting: matikan loading jika gagal
+    }
   });
 
   registerForm?.addEventListener('submit', async (e)=>{
@@ -1638,7 +1698,7 @@ function bindAuthForms(){
     const name = document.getElementById('reg-name').value.trim();
     const email = document.getElementById('reg-email').value.trim();
     const pass  = document.getElementById('reg-pass').value;
-    const role  = document.getElementById('reg-role').value; // 'siswa' | 'guru'
+    const role  = document.getElementById('reg-role').value;
     try {
       showLoading(true);
       const cred = await firebase.auth().createUserWithEmailAndPassword(email, pass);
@@ -1651,7 +1711,8 @@ function bindAuthForms(){
       showToast('Akun berhasil dibuat!','success');
     } catch (err){
       showToast(mapAuthError(err.code),'error');
-    } finally { showLoading(false); }
+      showLoading(false);
+    }
   });
 }
 
@@ -1937,9 +1998,9 @@ function renderLesson({ moduleId, idx }){
   };
 }
 
-function escapeHtml(s){
-  return String(s||'').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
-}
+<!-- « function escapeHtml(s){ -->
+<!-- «   return String(s||'').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); -->
+<!-- « } -->
 <!-- « AKHIR PART 6 » — Lanjut Part 7: Assessment + Glosarium + Result -->
 <!-- « MULAI PART 7 » -->
 // ============================================
