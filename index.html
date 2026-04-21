@@ -1,0 +1,2530 @@
+<!-- « MULAI PART 1 » -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>TKTC Kartini — SMKN Ile Boleng</title>
+<link rel="manifest" href="manifest.json">
+
+<!-- Firebase SDK (Compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<style>
+/* ============================================
+   CSS VARIABLES & RESET
+   ============================================ */
+:root {
+  --primary: #6C63FF;
+  --primary-dark: #5A52D5;
+  --primary-light: #8B83FF;
+  --secondary: #FF6584;
+  --accent: #00D2FF;
+  --bg-dark: #0F0E17;
+  --bg-card: #1A1A2E;
+  --bg-card-hover: #222244;
+  --bg-surface: #16213E;
+  --text-primary: #EAEAEA;
+  --text-secondary: #A0A0B0;
+  --text-muted: #6C6C80;
+  --success: #00C853;
+  --warning: #FFB300;
+  --danger: #FF5252;
+  --info: #29B6F6;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.3);
+  --shadow-sm: 0 4px 16px rgba(0,0,0,0.2);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+.hidden { display: none !important; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: 8px; }
+.gap-2 { gap: 16px; }
+.gap-3 { gap: 24px; }
+.w-full { width: 100%; }
+.text-center { text-align: center; }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mb-2 { margin-bottom: 16px; }
+.p-2 { padding: 16px; }
+.p-3 { padding: 24px; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.animate-fade { animation: fadeIn 0.5s ease-out; }
+.animate-slide { animation: slideUp 0.6s ease-out; }
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  font-family: var(--font);
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  box-shadow: 0 4px 15px rgba(108,99,255,0.4);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(108,99,255,0.6);
+}
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-secondary:hover { background: var(--bg-card-hover); }
+.btn-danger {
+  background: linear-gradient(135deg, var(--danger), #D32F2F);
+  color: white;
+}
+.btn-success {
+  background: linear-gradient(135deg, var(--success), #00A844);
+  color: white;
+}
+.btn-warning {
+  background: linear-gradient(135deg, var(--warning), #FF8F00);
+  color: white;
+}
+.btn-info {
+  background: linear-gradient(135deg, var(--info), #0288D1);
+  color: white;
+}
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+.btn-block { width: 100%; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ============================================
+   FORMS
+   ============================================ */
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.form-input {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--bg-surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 15px;
+  transition: var(--transition);
+  font-family: var(--font);
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.2);
+}
+.form-input::placeholder { color: var(--text-muted); }
+textarea.form-input { min-height: 100px; resize: vertical; }
+select.form-input { cursor: pointer; }
+
+/* ============================================
+   CARDS & PROGRESS
+   ============================================ */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: var(--transition);
+}
+.card:hover {
+  border-color: rgba(108,99,255,0.3);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.card-flat { border: none; }
+.card-flat:hover { transform: none; }
+
+.progress-bar {
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+/* ============================================
+   AUTH SCREEN
+   ============================================ */
+#auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #0F0E17 0%, #1A1A2E 50%, #16213E 100%);
+  position: relative;
+  overflow: hidden;
+}
+#auth-screen::before {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(108,99,255,0.15), transparent 70%);
+  top: -100px; right: -100px;
+  border-radius: 50%;
+}
+#auth-screen::after {
+  content: '';
+  position: absolute;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(255,101,132,0.1), transparent 70%);
+  bottom: -50px; left: -50px;
+  border-radius: 50%;
+}
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+}
+.auth-logo { text-align: center; margin-bottom: 40px; }
+.auth-logo .logo-icon {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin: 0 auto 16px;
+  box-shadow: 0 8px 32px rgba(108,99,255,0.3);
+}
+.auth-logo h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.auth-logo p { color: var(--text-secondary); font-size: 14px; margin-top: 4px; }
+.auth-card {
+  background: rgba(26,26,46,0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+.auth-tabs {
+  display: flex;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  margin-bottom: 28px;
+}
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: var(--transition);
+  border: none;
+  background: none;
+  font-family: var(--font);
+}
+.auth-tab.active { background: var(--primary); color: white; }
+.auth-msg {
+  padding: 12px 16px;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: none;
+}
+.auth-msg.error { display: block; background: rgba(255,82,82,0.15); color: var(--danger); border: 1px solid rgba(255,82,82,0.3); }
+.auth-msg.success { display: block; background: rgba(0,200,83,0.15); color: var(--success); border: 1px solid rgba(0,200,83,0.3); }
+.auth-msg.info { display: block; background: rgba(108,99,255,0.15); color: var(--primary-light); border: 1px solid rgba(108,99,255,0.3); }
+<!-- « AKHIR PART 1 » — BELUM TUTUP <style> & <head>. Lanjut Part 2. -->
+<!-- « MULAI PART 2 » -->
+/* ============================================
+   APP SHELL
+   ============================================ */
+#app-screen { min-height: 100vh; padding-bottom: 80px; }
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15,14,23,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 12px 16px;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.header-title {
+  font-size: 16px;
+  font-weight: 700;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  padding: 6px 12px 6px 6px;
+  border-radius: 24px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.header-user .avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+}
+.back-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--bg-card);
+  border: none;
+  color: var(--text-primary);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.page-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* Bottom Nav — 4 menu */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(15,14,23,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+  z-index: 100;
+}
+.nav-item {
+  flex: 1;
+  max-width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 4px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  background: none;
+  border: none;
+  transition: var(--transition);
+  font-family: var(--font);
+}
+.nav-item .nav-icon { font-size: 22px; line-height: 1; }
+.nav-item.active { color: var(--primary-light); }
+.nav-item.active .nav-icon { transform: translateY(-2px); }
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 60px; height: 60px;
+  background: radial-gradient(circle, var(--stat-color, rgba(108,99,255,0.2)), transparent 70%);
+  border-radius: 50%;
+  transform: translate(20px, -20px);
+}
+.stat-icon { font-size: 26px; margin-bottom: 6px; }
+.stat-value { font-size: 26px; font-weight: 700; }
+.stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* Module cards */
+.module-list { display: flex; flex-direction: column; gap: 14px; }
+.module-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.module-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(108,99,255,0.4);
+  box-shadow: var(--shadow-sm);
+}
+.module-icon {
+  width: 54px; height: 54px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.module-body { flex: 1; min-width: 0; }
+.module-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.module-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.5; }
+.module-meta { display: flex; gap: 12px; font-size: 12px; color: var(--text-muted); }
+.module-meta span { display: inline-flex; align-items: center; gap: 4px; }
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-primary { background: rgba(108,99,255,0.2); color: var(--primary-light); }
+.badge-success { background: rgba(0,200,83,0.2); color: var(--success); }
+.badge-warning { background: rgba(255,179,0,0.2); color: var(--warning); }
+.badge-danger { background: rgba(255,82,82,0.2); color: var(--danger); }
+.badge-info { background: rgba(41,182,246,0.2); color: var(--info); }
+
+/* Lesson view */
+.lesson-content {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 24px;
+  line-height: 1.8;
+}
+.lesson-content h3 { font-size: 20px; margin: 24px 0 12px; color: var(--primary-light); }
+.lesson-content h4 { font-size: 16px; margin: 20px 0 10px; color: var(--accent); }
+.lesson-content p { margin-bottom: 14px; color: var(--text-primary); font-size: 15px; }
+.lesson-content ul, .lesson-content ol { margin: 12px 0 14px 24px; color: var(--text-primary); }
+.lesson-content li { margin-bottom: 6px; font-size: 15px; }
+.lesson-content strong { color: var(--primary-light); font-weight: 600; }
+.lesson-content em { color: var(--accent); font-style: italic; }
+.lesson-content blockquote {
+  border-left: 3px solid var(--primary);
+  padding: 10px 16px;
+  background: rgba(108,99,255,0.08);
+  border-radius: 8px;
+  margin: 14px 0;
+  color: var(--text-secondary);
+}
+.lesson-content code {
+  background: rgba(108,99,255,0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: var(--primary-light);
+  font-family: 'Consolas', monospace;
+  font-size: 14px;
+}
+
+/* Quiz */
+.quiz-box {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.quiz-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.quiz-question {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 10px; }
+.quiz-opt {
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  font-family: var(--font);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  width: 100%;
+}
+.quiz-opt:hover { border-color: var(--primary); background: rgba(108,99,255,0.1); }
+.quiz-opt.selected { border-color: var(--primary); background: rgba(108,99,255,0.2); }
+.quiz-opt.correct { border-color: var(--success); background: rgba(0,200,83,0.15); }
+.quiz-opt.wrong { border-color: var(--danger); background: rgba(255,82,82,0.15); }
+.quiz-opt .opt-letter {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.quiz-opt.selected .opt-letter,
+.quiz-opt.correct .opt-letter { background: var(--primary); color: white; }
+.quiz-opt.wrong .opt-letter { background: var(--danger); color: white; }
+.quiz-opt.correct .opt-letter { background: var(--success); color: white; }
+
+.result-card { text-align: center; padding: 36px 24px; }
+.result-score {
+  font-size: 56px;
+  font-weight: 800;
+  margin: 12px 0;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.result-label { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+
+/* Review */
+.review-item {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 12px;
+  border-left: 4px solid var(--primary);
+}
+.review-item.wrong { border-left-color: var(--danger); }
+.review-item.correct { border-left-color: var(--success); }
+.review-q { font-weight: 600; margin-bottom: 10px; line-height: 1.5; }
+.review-opts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.review-opt {
+  padding: 8px 12px;
+  border-radius: var(--radius-xs);
+  background: var(--bg-surface);
+  font-size: 13px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.review-opt.is-correct { background: rgba(0,200,83,0.15); color: var(--success); }
+.review-opt.is-user { background: rgba(108,99,255,0.15); }
+.review-opt.is-wrong { background: rgba(255,82,82,0.15); color: var(--danger); }
+.review-expl {
+  background: rgba(108,99,255,0.08);
+  padding: 10px 12px;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.review-expl strong { color: var(--primary-light); }
+
+/* Glosarium */
+.glossary-search {
+  margin-bottom: 16px;
+  position: relative;
+}
+.glossary-list { display: flex; flex-direction: column; gap: 10px; }
+.glossary-item {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border-left: 3px solid var(--primary);
+}
+.glossary-term {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-light);
+  margin-bottom: 4px;
+}
+.glossary-def {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.glossary-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+
+/* Admin */
+.admin-tabs { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+.admin-tab {
+  padding: 8px 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+}
+.admin-tab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.data-table {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.data-row {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  align-items: center;
+  font-size: 13px;
+}
+.data-row:last-child { border-bottom: none; }
+.data-row.header {
+  background: var(--bg-surface);
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.row-student { grid-template-columns: 1fr auto; }
+.row-module { grid-template-columns: 40px 1fr auto; }
+.row-attempt { grid-template-columns: 1fr 70px 70px auto; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.25s ease-out;
+}
+.modal h3 { margin-bottom: 16px; font-size: 18px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: calc(90px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 2000;
+  box-shadow: var(--shadow);
+  animation: slideUp 0.25s ease-out;
+  max-width: 90vw;
+}
+.toast-success { background: var(--success); color: white; }
+.toast-error { background: var(--danger); color: white; }
+.toast-info { background: var(--info); color: white; }
+
+/* Loading overlay */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-dark);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.spinner {
+  width: 48px; height: 48px;
+  border: 4px solid rgba(108,99,255,0.2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .page-title { font-size: 20px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-value { font-size: 22px; }
+  .module-card { padding: 14px; gap: 12px; }
+  .module-icon { width: 44px; height: 44px; font-size: 22px; border-radius: 12px; }
+  .module-title { font-size: 15px; }
+  .auth-card { padding: 24px 20px; }
+  .lesson-content { padding: 18px; }
+  .quiz-box { padding: 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p style="color:var(--text-secondary);font-size:14px;">Memuat TKTC Kartini…</p>
+</div>
+
+<!-- Auth Screen -->
+<div id="auth-screen" class="hidden">
+  <div class="auth-container">
+    <div class="auth-logo">
+      <div class="logo-icon">🎬</div>
+      <h1>TKTC Kartini</h1>
+      <p>Tata Kamera & Tata Cahaya — SMKN Ile Boleng</p>
+    </div>
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">Masuk</button>
+        <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">Daftar</button>
+      </div>
+      <div id="auth-msg" class="auth-msg"></div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Nama Pengguna</label>
+          <input id="login-username" class="form-input" placeholder="misal: ani_siti" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label>Kata Sandi</label>
+          <input id="login-password" class="form-input" type="password" placeholder="••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Masuk</button>
+      </form>
+
+      <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input id="signup-name" class="form-input" placeholder="Nama lengkap siswa" required>
+        </div>
+        <div class="form-group">
+          <label>Nama Pengguna</label>
+          <input id="signup-username" class="form-input" placeholder="buat nama pengguna" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label>Kata Sandi</label>
+          <input id="signup-password" class="form-input" type="password" placeholder="minimal 4 karakter" required autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label>Kelas</label>
+          <select id="signup-class" class="form-input" required>
+            <option value="">-- Pilih kelas --</option>
+            <option>XI TKTC 1</option>
+            <option>XI TKTC 2</option>
+            <option>XII TKTC 1</option>
+            <option>XII TKTC 2</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Daftar</button>
+        <p class="text-center" style="margin-top:14px;font-size:12px;color:var(--text-muted);">
+          Akun siswa akan aktif setelah disetujui guru.
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- App Screen -->
+<div id="app-screen" class="hidden">
+  <header class="app-header">
+    <div class="header-inner">
+      <button id="back-btn" class="back-btn hidden" onclick="goBack()">←</button>
+      <div class="header-title" id="header-title">Beranda</div>
+      <div class="header-user" onclick="showUserMenu()">
+        <div class="avatar" id="header-avatar">K</div>
+        <span id="header-name">—</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="page-root" class="page-content animate-fade"></main>
+
+  <nav id="bottom-nav" class="bottom-nav"></nav>
+</div>
+
+<!-- Modal root -->
+<div id="modal-root"></div>
+<!-- « AKHIR PART 2 » — Lanjut Part 3: buka <script>. -->
+  <!-- « MULAI PART 3 » -->
+<script>
+// ============================================
+// FIREBASE CONFIG — GANTI DENGAN MILIK ANDA!
+// ============================================
+const firebaseConfig = {
+  apiKey: "AIzaSyC22i9r35jf30dgYk5a-_llFUI-w35ZQMI",
+  authDomain: "tktc-kartini.firebaseapp.com",
+  projectId: "tktc-kartini",
+  storageBucket: "tktc-kartini.firebasestorage.app",
+  messagingSenderId: "1055608355555",
+  appId: "1:1055608355555:web:6f3904a6b99d7fb0faa3d6",
+  measurementId: "G-DSZSC4B55X"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ============================================
+// COLLECTIONS
+// ============================================
+//  users          -> akun (admin + siswa)
+//  progress       -> progres pelajaran per siswa
+//  assessments    -> snapshot baseline terakhir per siswa
+//  finalAttempts  -> seluruh riwayat Asesmen Akhir per siswa (baru)
+//  modules        -> (opsional) modul custom admin
+// ============================================
+
+// ============================================
+// DB WRAPPERS (Firestore)
+// ============================================
+async function dbPut(collection, id, data) {
+  await db.collection(collection).doc(String(id)).set(data, { merge: false });
+}
+async function dbMerge(collection, id, data) {
+  await db.collection(collection).doc(String(id)).set(data, { merge: true });
+}
+async function dbGet(collection, id) {
+  const snap = await db.collection(collection).doc(String(id)).get();
+  return snap.exists ? snap.data() : null;
+}
+async function dbGetAll(collection) {
+  const snap = await db.collection(collection).get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+async function dbGetByField(collection, field, value) {
+  const snap = await db.collection(collection).where(field, '==', value).get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+async function dbDelete(collection, id) {
+  await db.collection(collection).doc(String(id)).delete();
+}
+async function dbAdd(collection, data) {
+  const ref = await db.collection(collection).add(data);
+  return ref.id;
+}
+
+// ============================================
+// UTIL
+// ============================================
+function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
+function nowIso() { return new Date().toISOString(); }
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })
+    + ' ' + d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+}
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ============================================
+// GLOSARIUM — Tata Kamera & Tata Cahaya
+// ============================================
+const GLOSSARY_DATA = [
+  { term: "Aperture", def: "Bukaan diafragma lensa, dinyatakan dalam f-stop (mis. f/2.8). Mengendalikan jumlah cahaya masuk dan kedalaman ruang." },
+  { term: "Ambient Light", def: "Cahaya lingkungan yang sudah ada di lokasi sebelum penata cahaya menambah sumber lain." },
+  { term: "Backlight", def: "Cahaya yang diarahkan dari belakang subjek untuk memisahkan subjek dari latar belakang." },
+  { term: "Balance White (White Balance)", def: "Pengaturan kamera untuk menghasilkan warna putih yang netral sesuai suhu warna sumber cahaya." },
+  { term: "Barn Door", def: "Penutup lipat di depan lampu untuk membentuk/mengarahkan pancaran cahaya." },
+  { term: "Blocking", def: "Penempatan dan pergerakan aktor serta kamera dalam sebuah adegan." },
+  { term: "Bounce Light", def: "Memantulkan cahaya dari reflektor/dinding agar cahaya lebih lembut." },
+  { term: "Chiaroscuro", def: "Gaya pencahayaan dengan kontras kuat antara terang dan gelap." },
+  { term: "Clipping", def: "Hilangnya detail karena highlight terlalu terang atau shadow terlalu gelap." },
+  { term: "Close-up (CU)", def: "Ukuran gambar yang menampilkan wajah/objek dari dekat, biasanya dari dagu sampai atas kepala." },
+  { term: "Color Temperature", def: "Suhu warna cahaya dalam Kelvin (K). Tungsten ≈ 3200K, Daylight ≈ 5600K." },
+  { term: "Composition", def: "Penyusunan elemen visual dalam bingkai agar komunikatif dan estetis." },
+  { term: "Contrast Ratio", def: "Perbandingan intensitas key light dan fill light (mis. 2:1, 4:1). Menentukan dramatisasi." },
+  { term: "Cutaway", def: "Shot penyela yang menampilkan detail di luar aksi utama untuk variasi atau penyambungan." },
+  { term: "Depth of Field (DoF)", def: "Rentang ketajaman dari titik terdekat sampai terjauh yang tampak fokus." },
+  { term: "Diffuser", def: "Bahan tembus cahaya (mis. silk, softbox) untuk melembutkan cahaya keras." },
+  { term: "Dolly Shot", def: "Pergerakan kamera maju/mundur di atas rel atau platform beroda." },
+  { term: "Dutch Angle (Tilted)", def: "Kemiringan sudut kamera untuk menciptakan kesan tegang atau tidak seimbang." },
+  { term: "Establishing Shot", def: "Shot pembuka yang memperkenalkan lokasi/waktu/konteks adegan." },
+  { term: "Extreme Close-up (ECU)", def: "Ukuran gambar sangat dekat, biasanya hanya mata, mulut, atau detail kecil." },
+  { term: "Fill Light", def: "Cahaya pengisi untuk mengurangi bayangan yang dihasilkan key light." },
+  { term: "Focal Length", def: "Panjang fokus lensa dalam milimeter (mm). Menentukan sudut pandang dan kompresi." },
+  { term: "Foreground / Midground / Background", def: "Tiga bidang kedalaman dalam komposisi: depan, tengah, dan belakang." },
+  { term: "Frame Rate (fps)", def: "Jumlah gambar per detik; 24/25 fps standar film, 30/60 fps untuk gerak halus." },
+  { term: "Gaffer", def: "Kepala departemen penata cahaya di lokasi syuting." },
+  { term: "Gel", def: "Lembaran filter berwarna yang dipasang di depan lampu untuk mengubah warna/koreksi suhu." },
+  { term: "Gimbal", def: "Alat penstabil kamera bermotor yang mengompensasi gerakan untuk shot yang halus." },
+  { term: "Handheld", def: "Teknik pengambilan gambar dengan kamera dipegang tangan untuk kesan realis/dinamis." },
+  { term: "Headroom", def: "Ruang di atas kepala subjek dalam bingkai." },
+  { term: "High Key Lighting", def: "Pencahayaan terang merata dengan bayangan minim; sering untuk komedi/iklan." },
+  { term: "Hot Spot", def: "Area gambar yang terlalu terang dibanding sekitarnya." },
+  { term: "ISO", def: "Tingkat sensitivitas sensor kamera terhadap cahaya. ISO tinggi = lebih terang tapi bertambah noise." },
+  { term: "Kelvin (K)", def: "Satuan suhu warna cahaya." },
+  { term: "Key Light", def: "Sumber cahaya utama yang dominan membentuk subjek." },
+  { term: "Leading Lines", def: "Garis dalam komposisi yang mengarahkan mata penonton ke subjek." },
+  { term: "Long Shot (LS)", def: "Ukuran gambar menampilkan seluruh tubuh subjek dan sebagian lingkungan." },
+  { term: "Low Key Lighting", def: "Pencahayaan dengan bayangan dominan dan kontras tinggi; kesan dramatis/misterius." },
+  { term: "Master Shot", def: "Shot utama yang mencakup seluruh adegan dari awal sampai akhir sebagai acuan editing." },
+  { term: "Medium Shot (MS)", def: "Ukuran gambar dari pinggang ke atas kepala." },
+  { term: "Motivated Lighting", def: "Pencahayaan yang tampak bersumber dari elemen dalam cerita (jendela, lampu ruangan)." },
+  { term: "ND Filter", def: "Filter Neutral Density yang mengurangi cahaya tanpa mengubah warna, untuk kontrol eksposur." },
+  { term: "Over the Shoulder (OTS)", def: "Shot dari belakang bahu satu karakter menghadap karakter lain, khas dialog." },
+  { term: "Panning", def: "Gerakan kamera horizontal dari sumbu tetap." },
+  { term: "Pedestal", def: "Gerakan kamera naik-turun secara vertikal." },
+  { term: "POV Shot (Point of View)", def: "Shot yang mewakili sudut pandang karakter." },
+  { term: "Practical Light", def: "Lampu yang tampak di dalam frame dan memang menyala sebagai bagian dari set." },
+  { term: "Rim Light", def: "Cahaya tepi yang menyinari kontur subjek dari samping-belakang." },
+  { term: "Rule of Thirds", def: "Komposisi dengan membagi frame 3x3 dan menempatkan subjek di titik pertemuan." },
+  { term: "Shutter Speed", def: "Lama sensor terbuka menangkap cahaya. Mempengaruhi motion blur." },
+  { term: "Softbox", def: "Kotak diffuser untuk menghasilkan cahaya lembut dan merata." },
+  { term: "Three-Point Lighting", def: "Pola dasar: key light, fill light, back light untuk menyinari subjek secara seimbang." },
+  { term: "Tilt", def: "Gerakan kamera vertikal (atas-bawah) dari sumbu tetap." },
+  { term: "Tracking Shot", def: "Gerakan kamera mengikuti subjek, sejajar atau menyamping." },
+  { term: "Two Shot", def: "Shot yang menampilkan dua subjek dalam satu bingkai." },
+  { term: "Vignette", def: "Efek gelap/penyempitan di tepi frame untuk memusatkan perhatian ke tengah." },
+  { term: "Wide Shot (WS)", def: "Shot dengan sudut lebar yang memperlihatkan subjek utuh dan konteks ruangnya." },
+  { term: "Zoom", def: "Perubahan focal length lensa untuk memperbesar/mengecilkan subjek tanpa memindahkan kamera." }
+];
+<!-- « AKHIR PART 3 » — <script> masih terbuka. Lanjut Part 4. -->
+  <!-- « MULAI PART 4 » -->
+// ============================================
+// DATA MODUL — mod-0 .. mod-7
+// ============================================
+const DEFAULT_MODULES = [
+  {
+    id: "mod-0",
+    title: "Asesmen Awal",
+    icon: "📋",
+    desc: "Asesmen diagnostik untuk mengukur pengetahuan awalmu tentang Tata Kamera & Tata Cahaya.",
+    tp: "DIAGNOSTIK",
+    type: "baseline",
+    estMin: 10,
+    lessons: []
+  },
+  {
+    id: "mod-1",
+    title: "Dasar Kamera & Komposisi",
+    icon: "📷",
+    desc: "Mengenal bagian kamera, ukuran gambar, dan kaidah komposisi dasar.",
+    tp: "TP-1",
+    type: "content",
+    estMin: 30,
+    lessons: [
+      { id: "l1-1", title: "Bagian & Jenis Kamera", body: `
+<h3>1. Mengenal Kamera</h3>
+<p>Kamera adalah alat perekam gambar yang inti kerjanya: <strong>cahaya masuk → lensa → sensor → gambar</strong>.</p>
+<h4>Jenis kamera yang umum di produksi video</h4>
+<ul>
+<li><strong>DSLR / Mirrorless</strong> — lensa bisa ganti, kualitas tinggi, cocok untuk film pendek & konten kreator.</li>
+<li><strong>Camcorder</strong> — ergonomis untuk merekam panjang, audio built-in lebih baik.</li>
+<li><strong>Kamera HP</strong> — praktis, sensor kecil tapi sudah sangat mumpuni untuk latihan.</li>
+<li><strong>Action Cam</strong> — tahan banting, sudut lebar, untuk adegan dinamis.</li>
+</ul>
+<h4>Bagian penting kamera</h4>
+<ul>
+<li><strong>Lensa</strong> — menentukan sudut pandang & karakter gambar.</li>
+<li><strong>Sensor</strong> — menangkap cahaya menjadi gambar digital.</li>
+<li><strong>Viewfinder / LCD</strong> — untuk membingkai objek.</li>
+<li><strong>Tombol kontrol</strong> — pengaturan ISO, Shutter, Aperture, White Balance.</li>
+</ul>
+<blockquote>Kamera hanyalah alat. Gambar yang baik lahir dari <em>mata penata</em> yang paham komposisi & cahaya.</blockquote>` },
+      { id: "l1-2", title: "Ukuran Gambar (Shot Size)", body: `
+<h3>Ukuran Gambar Dasar</h3>
+<p>Ukuran gambar menentukan <strong>berapa banyak</strong> subjek & lingkungan yang masuk dalam bingkai.</p>
+<ul>
+<li><strong>Extreme Long Shot (ELS)</strong> — seluruh lanskap, subjek tampak kecil.</li>
+<li><strong>Long Shot (LS)</strong> — subjek utuh + konteks ruangnya.</li>
+<li><strong>Medium Shot (MS)</strong> — pinggang ke atas kepala; khas dialog.</li>
+<li><strong>Close-up (CU)</strong> — dagu sampai ubun-ubun; fokus ekspresi.</li>
+<li><strong>Extreme Close-up (ECU)</strong> — detail seperti mata atau bibir.</li>
+</ul>
+<h4>Kapan memakai apa?</h4>
+<ul>
+<li>ELS/LS — memperkenalkan lokasi (<em>establishing shot</em>).</li>
+<li>MS — percakapan dua orang.</li>
+<li>CU/ECU — memperkuat emosi atau menonjolkan detail penting.</li>
+</ul>` },
+      { id: "l1-3", title: "Aturan Komposisi", body: `
+<h3>Aturan Komposisi Dasar</h3>
+<h4>1. Rule of Thirds</h4>
+<p>Bagi bingkai menjadi <strong>3 x 3</strong>. Tempatkan subjek di titik pertemuan garis.</p>
+<h4>2. Leading Lines</h4>
+<p>Gunakan garis (jalan, pagar, sungai) untuk <em>menuntun</em> mata penonton menuju subjek.</p>
+<h4>3. Headroom & Looking Room</h4>
+<ul>
+<li><strong>Headroom</strong> — sisakan ruang wajar di atas kepala.</li>
+<li><strong>Looking room</strong> — beri ruang di depan arah pandang subjek.</li>
+</ul>
+<h4>4. Foreground – Midground – Background</h4>
+<p>Susun tiga lapisan kedalaman agar gambar tidak datar.</p>
+<h4>5. Simetri & Pola</h4>
+<p>Manfaatkan garis pusat atau pola berulang untuk kesan rapi dan dramatis.</p>
+<blockquote>Aturan boleh dilanggar — tapi kamu harus tahu aturannya dulu.</blockquote>` }
+    ]
+  },
+  {
+    id: "mod-2",
+    title: "Eksposur & Setelan Kamera",
+    icon: "⚙️",
+    desc: "Segitiga eksposur (ISO, Shutter, Aperture), White Balance, dan Frame Rate.",
+    tp: "TP-1",
+    type: "content",
+    estMin: 30,
+    lessons: [
+      { id: "l2-1", title: "Segitiga Eksposur", body: `
+<h3>Segitiga Eksposur</h3>
+<p>Eksposur ditentukan 3 hal:</p>
+<ul>
+<li><strong>Aperture (f-stop)</strong> — seberapa besar bukaan lensa. Kecil f/1.8 = gambar terang + DoF tipis. Besar f/11 = gambar lebih gelap + DoF dalam.</li>
+<li><strong>Shutter Speed</strong> — lama sensor terbuka. Cepat (1/500) = gerakan beku. Lambat (1/30) = motion blur.</li>
+<li><strong>ISO</strong> — sensitivitas sensor. Rendah (100–400) = bersih. Tinggi (3200+) = terang tapi <em>noise</em>.</li>
+</ul>
+<h4>Aturan shutter speed untuk video</h4>
+<p>Umum: <code>shutter = 1 / (2 × fps)</code>. Pada 24 fps → 1/50, pada 30 fps → 1/60. Aturan ini membuat gerak terlihat natural.</p>` },
+      { id: "l2-2", title: "White Balance & Frame Rate", body: `
+<h3>White Balance (WB)</h3>
+<p>WB memastikan warna putih terekam netral sesuai suhu warna sumber cahaya (Kelvin).</p>
+<ul>
+<li>Tungsten — ~3200K (kuning).</li>
+<li>Daylight — ~5600K (putih kebiruan).</li>
+<li>Cloudy — ~6500K.</li>
+</ul>
+<p>Gunakan <strong>custom WB</strong> dengan kertas putih untuk hasil paling akurat.</p>
+<h3>Frame Rate (fps)</h3>
+<ul>
+<li><strong>24/25 fps</strong> — sinematik.</li>
+<li><strong>30 fps</strong> — standar TV & konten sosial.</li>
+<li><strong>60+ fps</strong> — gerakan halus & slow motion (saat di-playback 24/30 fps).</li>
+</ul>` }
+    ]
+  },
+  {
+    id: "mod-3",
+    title: "Gerakan Kamera & Sudut Pengambilan",
+    icon: "🎥",
+    desc: "Panning, tilt, tracking, dolly, angle, dan POV untuk bercerita lewat gerakan.",
+    tp: "TP-1",
+    type: "content",
+    estMin: 25,
+    lessons: [
+      { id: "l3-1", title: "Jenis Gerakan Kamera", body: `
+<h3>Gerakan Kamera</h3>
+<ul>
+<li><strong>Pan</strong> — kamera berputar horizontal di sumbu tetap.</li>
+<li><strong>Tilt</strong> — kamera berputar vertikal di sumbu tetap.</li>
+<li><strong>Pedestal</strong> — naik-turun vertikal (kamera ikut berpindah tinggi).</li>
+<li><strong>Dolly</strong> — maju/mundur, biasanya pakai rel.</li>
+<li><strong>Tracking</strong> — mengikuti subjek secara sejajar.</li>
+<li><strong>Handheld</strong> — dipegang tangan, kesan realis.</li>
+<li><strong>Gimbal/Steadicam</strong> — gerak halus meski bergerak cepat.</li>
+<li><strong>Zoom</strong> — perubahan focal length; bukan gerakan fisik kamera.</li>
+</ul>` },
+      { id: "l3-2", title: "Sudut Kamera (Angle)", body: `
+<h3>Sudut Pengambilan</h3>
+<ul>
+<li><strong>Eye-level</strong> — sejajar mata, netral.</li>
+<li><strong>High Angle</strong> — dari atas; subjek tampak lemah/kecil.</li>
+<li><strong>Low Angle</strong> — dari bawah; subjek tampak kuat/berkuasa.</li>
+<li><strong>Bird's Eye (top view)</strong> — tegak lurus dari atas.</li>
+<li><strong>Dutch Angle</strong> — miring; kesan tegang/tidak seimbang.</li>
+<li><strong>POV</strong> — sudut pandang karakter.</li>
+<li><strong>Over the Shoulder (OTS)</strong> — dari belakang bahu; khas dialog.</li>
+</ul>
+<blockquote>Setiap angle mengandung makna — pilih sesuai pesan adegan.</blockquote>` }
+    ]
+  },
+  {
+    id: "mod-4",
+    title: "Dasar Tata Cahaya",
+    icon: "💡",
+    desc: "Karakter cahaya, kualitas, arah, dan kontras.",
+    tp: "TP-2",
+    type: "content",
+    estMin: 25,
+    lessons: [
+      { id: "l4-1", title: "Karakter & Kualitas Cahaya", body: `
+<h3>Karakter Cahaya</h3>
+<ul>
+<li><strong>Hard light</strong> — sumber kecil/jauh, bayangan tegas. Contoh: matahari siang, spotlight.</li>
+<li><strong>Soft light</strong> — sumber besar/dekat + diffuser, bayangan lembut. Contoh: softbox, langit mendung.</li>
+</ul>
+<h4>Arah Cahaya</h4>
+<ul>
+<li><strong>Front</strong> — subjek rata, datar.</li>
+<li><strong>Side</strong> — membentuk tekstur.</li>
+<li><strong>Back</strong> — memisahkan subjek dari latar.</li>
+<li><strong>Top/Bottom</strong> — dramatis/mencekam.</li>
+</ul>
+<h4>Kontras</h4>
+<p><strong>Contrast ratio</strong> = perbandingan intensitas key : fill. 2:1 halus, 4:1 dramatis, 8:1 sangat dramatis.</p>` },
+      { id: "l4-2", title: "Suhu Warna & Mood", body: `
+<h3>Suhu Warna (Kelvin)</h3>
+<p>Dingin (biru, >5600K) → misterius, sedih, modern.<br>Hangat (kuning, <3500K) → nyaman, romantis, nostalgik.</p>
+<h4>High Key vs Low Key</h4>
+<ul>
+<li><strong>High Key</strong> — terang merata, bayangan minim; komedi, iklan produk.</li>
+<li><strong>Low Key</strong> — bayangan dominan, kontras tinggi; thriller, film noir.</li>
+</ul>
+<blockquote>Cahaya bukan hanya soal "terang", tapi tentang <em>mood</em> cerita.</blockquote>` }
+    ]
+  },
+  {
+    id: "mod-5",
+    title: "Three-Point Lighting",
+    icon: "🌟",
+    desc: "Pola dasar pencahayaan: key, fill, back light, plus variasi motivated & practical.",
+    tp: "TP-2",
+    type: "content",
+    estMin: 30,
+    lessons: [
+      { id: "l5-1", title: "Pola 3-Point", body: `
+<h3>Three-Point Lighting</h3>
+<ul>
+<li><strong>Key Light</strong> — sumber utama, biasanya 45° dari depan. Menentukan karakter.</li>
+<li><strong>Fill Light</strong> — mengurangi bayangan dari key, biasanya di seberang key dengan intensitas lebih rendah.</li>
+<li><strong>Back Light (Rim)</strong> — dari belakang subjek untuk kontur & pemisahan dari latar.</li>
+</ul>
+<h4>Langkah setup</h4>
+<ol>
+<li>Tempatkan key light → cek ekspos di wajah.</li>
+<li>Tambahkan fill di sisi berlawanan → atur rasio.</li>
+<li>Pasang back light di atas-belakang → pastikan tidak menyilaukan lensa.</li>
+<li>Tambah background light bila ingin memisahkan lebih kuat.</li>
+</ol>` },
+      { id: "l5-2", title: "Motivated & Practical Lighting", body: `
+<h3>Motivated Lighting</h3>
+<p>Cahaya yang <em>tampak</em> datang dari sumber dalam cerita (jendela, lampu meja). Walau sumber aslinya lampu buatan, arah & warnanya dibuat konsisten dengan motivasinya.</p>
+<h3>Practical Lighting</h3>
+<p>Lampu yang masuk bingkai dan memang menyala (lampu meja nyala, TV menyala). Menambah realisme & kedalaman.</p>
+<h3>Bouncing & Diffusion</h3>
+<ul>
+<li><strong>Bounce</strong> — pantulkan cahaya ke dinding/reflektor untuk hasil lembut.</li>
+<li><strong>Diffuse</strong> — saring cahaya lewat silk/softbox agar bayangan halus.</li>
+</ul>` }
+    ]
+  },
+  {
+    id: "mod-6",
+    title: "Peralatan Lampu & Safety",
+    icon: "🔌",
+    desc: "Jenis lampu, aksesori, keselamatan kelistrikan, dan manajemen kabel di lokasi.",
+    tp: "TP-2",
+    type: "content",
+    estMin: 25,
+    lessons: [
+      { id: "l6-1", title: "Jenis Lampu & Aksesori", body: `
+<h3>Jenis Lampu</h3>
+<ul>
+<li><strong>Tungsten</strong> — hangat (~3200K), panas, daya tinggi.</li>
+<li><strong>HMI</strong> — daylight (~5600K), terang, daya besar.</li>
+<li><strong>LED</strong> — hemat daya, sering bi-color/RGB, tidak panas.</li>
+<li><strong>Fluorescent (Kino Flo)</strong> — lembut dan merata, cocok untuk dialog.</li>
+</ul>
+<h3>Aksesori Penting</h3>
+<ul>
+<li><strong>Softbox</strong> — melembutkan cahaya.</li>
+<li><strong>Barn door</strong> — mengarahkan pancaran.</li>
+<li><strong>Flag</strong> — menutup cahaya yang tidak diinginkan.</li>
+<li><strong>Reflector</strong> — memantulkan cahaya matahari/lampu.</li>
+<li><strong>Gel</strong> — mengubah warna cahaya.</li>
+</ul>` },
+      { id: "l6-2", title: "Keselamatan Kerja (K3) Pencahayaan", body: `
+<h3>Keselamatan Lokasi</h3>
+<ul>
+<li>Pastikan daya listrik cukup (hitung total watt lampu vs kapasitas stop kontak).</li>
+<li>Gunakan <strong>safety cable</strong> pada lampu yang terpasang di stand tinggi.</li>
+<li>Lampu panas (tungsten/HMI) — beri jarak aman dari bahan mudah terbakar.</li>
+<li>Pakai <strong>sarung tangan tahan panas</strong> saat mengganti gel/diffuser.</li>
+<li>Rapikan kabel dengan <em>gaffer tape</em> untuk menghindari tersandung.</li>
+<li>Gunakan stabilizer/UPS jika tegangan listrik tidak stabil.</li>
+</ul>
+<blockquote>Syuting aman adalah syuting yang selesai tepat waktu dengan semua kru pulang sehat.</blockquote>` }
+    ]
+  },
+  {
+    id: "mod-7",
+    title: "Asesmen Akhir",
+    icon: "🎓",
+    desc: "20 soal pilihan ganda A–E yang mencakup TP-1 (Tata Kamera) dan TP-2 (Tata Cahaya). Boleh diulang.",
+    tp: "SUMATIF",
+    type: "final",
+    estMin: 25,
+    lessons: []
+  }
+];
+<!-- « AKHIR PART 4 » — Lanjut Part 5: soal asesmen. -->
+<!-- « MULAI PART 5 » -->
+// ============================================
+// BASELINE QUESTIONS — Diagnostik Awal (ringkas)
+// Format opsi: A–D (agar singkat). Tanpa pembahasan.
+// ============================================
+const BASELINE_QUESTIONS = [
+  { id:"b1", q:"Apa fungsi utama 'key light' dalam tata cahaya?",
+    options:["Sebagai cahaya tepi","Sebagai sumber cahaya utama","Sebagai pengisi bayangan","Sebagai latar"], correct:1 },
+  { id:"b2", q:"Ukuran gambar yang menampilkan subjek dari pinggang ke atas disebut…",
+    options:["Close-up","Long shot","Medium shot","Extreme close-up"], correct:2 },
+  { id:"b3", q:"Aperture dinyatakan dalam satuan…",
+    options:["Kelvin","fps","f-stop","ISO"], correct:2 },
+  { id:"b4", q:"Aturan komposisi yang membagi bingkai 3×3 dikenal sebagai…",
+    options:["Leading lines","Rule of thirds","Headroom","Dutch angle"], correct:1 },
+  { id:"b5", q:"Cahaya dengan suhu ~3200K tergolong…",
+    options:["Daylight","Cloudy","Tungsten","Shade"], correct:2 },
+  { id:"b6", q:"Gerakan kamera horizontal pada sumbu tetap disebut…",
+    options:["Tilt","Pan","Dolly","Zoom"], correct:1 },
+  { id:"b7", q:"Pola pencahayaan yang menggabungkan key, fill, dan back light disebut…",
+    options:["Single-point","Two-point","Three-point","High key"], correct:2 },
+  { id:"b8", q:"Untuk gerak yang terlihat natural pada 24 fps, shutter speed ideal adalah…",
+    options:["1/24","1/50","1/200","1/1000"], correct:1 }
+];
+
+// ============================================
+// ASESMEN AKHIR — 20 Soal PG, Opsi A–E
+// TP-1 (Tata Kamera): 10 soal — Bloom C1..C6 bervariasi
+// TP-2 (Tata Cahaya): 10 soal — Bloom C1..C6 bervariasi
+// Format: { id, q, options[5], correct(index 0..4), tp, bloom, expl }
+// ============================================
+const FINAL_ASSESSMENT_QUESTIONS = [
+  // ===== TP-1 : TATA KAMERA (soal 1–10) =====
+  { id:"f1", tp:"TP-1", bloom:"C1",
+    q:"Bagian kamera yang bertugas mengubah cahaya menjadi data gambar digital adalah…",
+    options:["Lensa","Viewfinder","Sensor","Shutter","Diafragma"],
+    correct:2,
+    expl:"**Sensor** menangkap cahaya yang difokuskan lensa dan mengubahnya menjadi sinyal elektronik (data gambar). Lensa hanya memfokuskan cahaya." },
+
+  { id:"f2", tp:"TP-1", bloom:"C2",
+    q:"Mengapa shutter speed 1/50 detik umum dipakai pada perekaman video 24/25 fps?",
+    options:[
+      "Agar gambar terlihat beku total",
+      "Agar noise sensor hilang",
+      "Agar motion blur terlihat natural (aturan 1⁄2×fps)",
+      "Agar aperture otomatis terbuka lebar",
+      "Agar ISO menurun sendirinya"
+    ],
+    correct:2,
+    expl:"Aturan umum **shutter = 1 ÷ (2 × fps)**. Pada 24/25 fps, 1/50 menghasilkan motion blur yang alami sesuai persepsi mata manusia." },
+
+  { id:"f3", tp:"TP-1", bloom:"C2",
+    q:"Pernyataan yang paling tepat tentang hubungan aperture dan Depth of Field adalah…",
+    options:[
+      "f/1.8 menghasilkan DoF lebih dalam dari f/11",
+      "Aperture tidak memengaruhi DoF",
+      "f/1.8 menghasilkan DoF lebih tipis dari f/11",
+      "DoF hanya dipengaruhi ISO",
+      "DoF hanya dipengaruhi shutter speed"
+    ],
+    correct:2,
+    expl:"Aperture lebar (angka f kecil, mis. f/1.8) → bukaan besar → **DoF tipis**. Aperture sempit (f/11) → **DoF dalam**." },
+
+  { id:"f4", tp:"TP-1", bloom:"C3",
+    q:"Seorang siswa merekam wawancara di ruang remang. Setting yang paling tepat agar wajah terang tapi noise tetap minim adalah…",
+    options:[
+      "ISO 100, f/16, 1/1000",
+      "ISO 400, f/2.8, 1/50",
+      "ISO 6400, f/22, 1/2000",
+      "ISO 100, f/22, 1/2",
+      "ISO 12800, f/11, 1/500"
+    ],
+    correct:1,
+    expl:"Ruang redup membutuhkan bukaan lensa lebar (**f/2.8**) dan ISO sedang (**400**) untuk cahaya cukup tanpa noise berlebih. Shutter **1/50** sesuai perekaman 24–30 fps." },
+
+  { id:"f5", tp:"TP-1", bloom:"C3",
+    q:"Untuk adegan dialog dua orang saling berhadapan, teknik yang umum dipakai bergantian adalah…",
+    options:[
+      "Dua Dutch angle",
+      "Dua Bird's eye view",
+      "Sepasang Over the Shoulder (OTS)",
+      "Dua Extreme Long Shot",
+      "Dua POV shot yang sama"
+    ],
+    correct:2,
+    expl:"**Over the Shoulder (OTS)** adalah kaidah klasik dialog: kamera di belakang bahu satu karakter, mengarah ke lawan bicaranya, lalu bergantian." },
+
+  { id:"f6", tp:"TP-1", bloom:"C4",
+    q:"Analisis: mengapa shot **low angle** membuat subjek terasa berkuasa?",
+    options:[
+      "Karena sudut pandangnya sejajar mata",
+      "Karena penonton melihat dari bawah sehingga subjek tampak lebih besar & dominan",
+      "Karena subjek terlihat dari atas, mengecil",
+      "Karena menghasilkan efek bokeh otomatis",
+      "Karena kamera miring ke samping"
+    ],
+    correct:1,
+    expl:"Low angle menempatkan kamera di **bawah** garis pandang subjek. Mata penonton seakan **mendongak**, sehingga subjek secara psikologis terasa besar dan berkuasa." },
+
+  { id:"f7", tp:"TP-1", bloom:"C4",
+    q:"Sebuah video terlihat pucat dan kebiruan padahal direkam di ruang berlampu kuning. Penyebab paling mungkin adalah…",
+    options:[
+      "ISO terlalu rendah",
+      "Aperture terlalu sempit",
+      "White Balance diset ke Daylight, padahal sumber Tungsten",
+      "Shutter speed terlalu cepat",
+      "Frame rate terlalu tinggi"
+    ],
+    correct:2,
+    expl:"Jika WB diset **Daylight (~5600K)** sementara sumber sebenarnya **Tungsten (~3200K)**, kamera akan menganggap cahaya lebih hangat dari yang seharusnya dan **membuang warna kuning**, sehingga gambar terlihat kebiruan." },
+
+  { id:"f8", tp:"TP-1", bloom:"C5",
+    q:"Evaluasi: dari shot berikut, mana yang paling tepat untuk **memperkenalkan** lokasi sebuah desa nelayan di awal film?",
+    options:[
+      "Extreme Close-up wajah nelayan",
+      "Medium Shot dua nelayan mengobrol",
+      "Extreme Long Shot / Establishing Shot desa dari kejauhan",
+      "POV dari dalam perahu",
+      "Dutch angle tumpukan jala"
+    ],
+    correct:2,
+    expl:"**Establishing shot** (biasanya ELS/LS) memperlihatkan konteks ruang & waktu. Cocok sebagai pembuka agar penonton memahami lokasi cerita." },
+
+  { id:"f9", tp:"TP-1", bloom:"C5",
+    q:"Pada saat merekam pertandingan futsal, pilihan pengaturan yang paling bijak untuk **membekukan gerakan pemain** adalah…",
+    options:[
+      "Shutter 1/30, ISO 100",
+      "Shutter 1/1000, ISO 800",
+      "Shutter 1/4, aperture f/22",
+      "Shutter 1/60, aperture f/1.4",
+      "Frame rate 12 fps"
+    ],
+    correct:1,
+    expl:"Untuk membekukan gerakan cepat, pakai **shutter tinggi** (mis. 1/1000). ISO 800 kompensasi kurangnya cahaya akibat shutter cepat. Pilihan lain terlalu lambat → motion blur." },
+
+  { id:"f10", tp:"TP-1", bloom:"C6",
+    q:"Merancang: untuk scene flashback nostalgik, kombinasi kreatif paling efektif adalah…",
+    options:[
+      "Shutter 1/2000 + WB Tungsten + angle eye-level",
+      "Frame rate 60 fps di-playback 60 fps + WB Daylight",
+      "Frame rate 60 fps di-playback 24 fps (slow-mo) + WB sedikit hangat + gerakan dolly perlahan",
+      "Dutch angle ekstrem + ISO 12800",
+      "Zoom-in cepat + WB fluorescent"
+    ],
+    correct:2,
+    expl:"Flashback nostalgik lazim memakai **slow motion (rekam 60 fps, playback 24 fps)**, **tone hangat** untuk kesan kenangan, dan **dolly perlahan** agar terasa melankolis. Kombinasi ini merangkai beberapa konsep sekaligus (menciptakan = C6)." },
+
+  // ===== TP-2 : TATA CAHAYA (soal 11–20) =====
+  { id:"f11", tp:"TP-2", bloom:"C1",
+    q:"Dalam pola three-point lighting, cahaya yang membuat kontur di tepi subjek disebut…",
+    options:["Key light","Fill light","Back/Rim light","Practical light","Ambient light"],
+    correct:2,
+    expl:"**Back light** (juga disebut **Rim light**) ditempatkan di belakang-atas subjek untuk menyinari tepi rambut/bahu, memisahkannya dari latar." },
+
+  { id:"f12", tp:"TP-2", bloom:"C1",
+    q:"Satuan yang dipakai untuk menyatakan suhu warna cahaya adalah…",
+    options:["Lumen","Lux","Candela","Kelvin","Watt"],
+    correct:3,
+    expl:"**Kelvin (K)** adalah satuan suhu warna. Tungsten ~3200K, daylight ~5600K." },
+
+  { id:"f13", tp:"TP-2", bloom:"C2",
+    q:"Mengapa softbox menghasilkan bayangan yang lebih lembut dibanding lampu spot telanjang?",
+    options:[
+      "Karena suhu warnanya lebih dingin",
+      "Karena dayanya lebih kecil",
+      "Karena luas permukaan sumber cahaya menjadi lebih besar (diffuse)",
+      "Karena menggunakan gel berwarna",
+      "Karena sumbernya terpantul dinding"
+    ],
+    correct:2,
+    expl:"Bayangan lembut muncul ketika **permukaan sumber cahaya lebih luas relatif terhadap subjek**. Softbox menyebarkan cahaya lewat diffuser → sumber 'terasa' besar → transisi bayangan halus." },
+
+  { id:"f14", tp:"TP-2", bloom:"C2",
+    q:"Contrast ratio **4:1** antara key dan fill light berarti…",
+    options:[
+      "Fill 4× lebih terang dari key",
+      "Key 4× lebih terang dari fill",
+      "Tidak ada fill sama sekali",
+      "Back light 4× lebih terang dari key",
+      "Key dan fill sama terang"
+    ],
+    correct:1,
+    expl:"Contrast ratio 4:1 berarti **key light 4× lebih terang dari fill**. Rasio ini lebih dramatis dibanding 2:1 (halus) namun tidak seekstrem 8:1." },
+
+  { id:"f15", tp:"TP-2", bloom:"C3",
+    q:"Di lokasi, Ibu harus syuting di kamar kecil dengan satu jendela. Untuk wawancara siswa dengan mood natural, langkah paling praktis adalah…",
+    options:[
+      "Tutup jendela, pasang HMI 2K",
+      "Posisikan siswa menghadap jendela sebagai key + reflektor putih di sisi berlawanan sebagai fill",
+      "Tembak backlight matahari langsung ke lensa",
+      "Pasang gel CTB (biru) di atas lampu tungsten 500W dan arahkan langsung ke wajah",
+      "Matikan semua cahaya dan rekam dengan ISO 25600"
+    ],
+    correct:1,
+    expl:"Memanfaatkan **cahaya jendela sebagai key** (soft, natural) dan **reflektor** sebagai fill adalah setup paling praktis & ekonomis untuk wawancara di ruang kecil." },
+
+  { id:"f16", tp:"TP-2", bloom:"C3",
+    q:"Untuk scene **thriller** malam hari di gudang, pencahayaan yang paling sesuai adalah…",
+    options:[
+      "High key lighting merata dari depan",
+      "Low key dengan kontras tinggi, bayangan tajam, rim light sedikit",
+      "Front light saja dari lampu sorot",
+      "Cahaya lembut merata tanpa bayangan",
+      "Gel pink di seluruh lampu"
+    ],
+    correct:1,
+    expl:"**Low key lighting** dengan rasio kontras tinggi (mis. 8:1) dan bayangan dominan menghasilkan nuansa misterius/tegang yang khas thriller/noir." },
+
+  { id:"f17", tp:"TP-2", bloom:"C4",
+    q:"Pada adegan, subjek terlihat 'menyatu' dengan latar belakang gelap. Penyebab paling mungkin dan solusinya adalah…",
+    options:[
+      "Aperture terlalu sempit — tambah ISO saja",
+      "Key light terlalu redup — ganti kamera",
+      "Tidak ada back/rim light — tambahkan back light untuk memisahkan subjek dari latar",
+      "White balance salah — naikkan shutter speed",
+      "Frame rate terlalu rendah — pasang reflektor putih"
+    ],
+    correct:2,
+    expl:"Back/rim light adalah tugas **memisahkan subjek dari latar**. Ketika subjek menyatu dengan latar gelap, solusi paling tepat adalah menambahkan back light di belakang subjek." },
+
+  { id:"f18", tp:"TP-2", bloom:"C4",
+    q:"Seorang DOP memakai lampu jendela (praktikal, menyala di dalam frame) sekaligus lampu buatan di luar frame yang seolah-olah bersumber dari jendela itu. Pendekatan ini disebut…",
+    options:[
+      "Bounce-only lighting",
+      "Motivated lighting",
+      "Available light murni",
+      "Flat lighting",
+      "High key lighting"
+    ],
+    correct:1,
+    expl:"**Motivated lighting**: cahaya buatan dibuat tampak **bersumber dari elemen cerita** (jendela, lampu meja). Ini berbeda dari practical light saja (yang hanya lampu dalam frame menyala)." },
+
+  { id:"f19", tp:"TP-2", bloom:"C5",
+    q:"Evaluasi prosedur K3 berikut yang PALING AMAN ketika memasang lampu tungsten 1kW di stand tinggi:",
+    options:[
+      "Langsung pasang tanpa safety cable agar cepat",
+      "Gunakan safety cable, sarung tangan tahan panas, dan pastikan stand tidak menghalangi jalur darurat",
+      "Taruh lampu menyala langsung di atas gorden kain",
+      "Sambung langsung ke stop kontak tanpa mengecek kapasitas daya",
+      "Biarkan kabel melintang di jalur lalu lalang kru"
+    ],
+    correct:1,
+    expl:"Prosedur aman meliputi **safety cable** (jaring-jaring pengaman), **sarung tangan tahan panas** (tungsten sangat panas), dan **tidak menghalangi jalur darurat**. Pilihan lain melanggar K3." },
+
+  { id:"f20", tp:"TP-2", bloom:"C6",
+    q:"Merancang: Ibu ingin merekam klip motivasi siang hari di kelas dengan kesan hangat dan ceria, tapi cuaca mendung (biru). Rancangan paling tepat adalah…",
+    options:[
+      "Tambah gel CTB (biru) di lampu + turunkan ISO",
+      "Pasang lampu LED 5600K menghadap langit + tutup jendela",
+      "Pakai lampu LED bi-color diset ~3800K sebagai key dari depan 45° + reflektor putih sebagai fill + lampu kecil hangat sebagai back rim, sambil atur WB custom",
+      "Matikan semua lampu dan rekam apa adanya",
+      "Gunakan shutter 1/2000 agar cerah"
+    ],
+    correct:2,
+    expl:"Rancangan C6: **LED bi-color ~3800K** memberi sentuhan hangat tanpa berlebihan, **three-point** (key 45° + fill reflektor + back rim hangat) membentuk subjek dengan baik, dan **WB custom** memastikan warna akurat. Merangkai banyak konsep → level mencipta." }
+];
+<!-- « AKHIR PART 5 » — Lanjut Part 6: state + auth + navigasi + dashboard. -->
+<!-- « MULAI PART 6 » -->
+// ============================================
+// APP STATE
+// ============================================
+const state = {
+  user: null,            // { uid, email, displayName, role }
+  userData: null,        // dokumen user dari Firestore
+  modules: [],           // dari DEFAULT_MODULES / Firestore
+  progress: {},          // { [moduleId]: { [lessonId]: true }, completedAt? }
+  baselineResult: null,  // { score, total, answers }
+  finalResult: null,     // { score, total, answers, timestamp }
+  currentModuleId: null,
+  currentLessonIndex: 0
+};
+
+// ============================================
+// INIT APP
+// ============================================
+async function initApp(){
+  try {
+    showLoading(true);
+    // Auth listener
+    firebase.auth().onAuthStateChanged(async (user)=>{
+      if (user){
+        state.user = { uid: user.uid, email: user.email, displayName: user.displayName || user.email.split('@')[0] };
+        await loadUserData();
+        await loadModules();
+        await loadProgress();
+        showApp();
+      } else {
+        state.user = null;
+        showAuth();
+      }
+      showLoading(false);
+    });
+
+    // Wire form listeners
+    bindAuthForms();
+    bindNav();
+  } catch (e){
+    console.error('initApp error', e);
+    showToast('Gagal memulai aplikasi', 'error');
+    showLoading(false);
+  }
+}
+
+// ============================================
+// LOADER HELPERS
+// ============================================
+function showLoading(on){
+  const el = document.getElementById('loading-screen');
+  if (!el) return;
+  el.classList.toggle('hidden', !on);
+}
+function showAuth(){
+  document.getElementById('auth-screen')?.classList.remove('hidden');
+  document.getElementById('app-screen')?.classList.add('hidden');
+}
+function showApp(){
+  document.getElementById('auth-screen')?.classList.add('hidden');
+  document.getElementById('app-screen')?.classList.remove('hidden');
+  renderHeader();
+  navigateTo('dashboard');
+}
+
+// ============================================
+// AUTH
+// ============================================
+function bindAuthForms(){
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+  const toRegister = document.getElementById('to-register');
+  const toLogin = document.getElementById('to-login');
+
+  toRegister?.addEventListener('click', (e)=>{
+    e.preventDefault();
+    document.getElementById('login-box').classList.add('hidden');
+    document.getElementById('register-box').classList.remove('hidden');
+  });
+  toLogin?.addEventListener('click', (e)=>{
+    e.preventDefault();
+    document.getElementById('register-box').classList.add('hidden');
+    document.getElementById('login-box').classList.remove('hidden');
+  });
+
+  loginForm?.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-pass').value;
+    try {
+      showLoading(true);
+      await firebase.auth().signInWithEmailAndPassword(email, pass);
+      showToast('Selamat datang kembali!','success');
+    } catch (err){
+      showToast(mapAuthError(err.code),'error');
+    } finally { showLoading(false); }
+  });
+
+  registerForm?.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pass  = document.getElementById('reg-pass').value;
+    const role  = document.getElementById('reg-role').value; // 'siswa' | 'guru'
+    try {
+      showLoading(true);
+      const cred = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+      await cred.user.updateProfile({ displayName: name });
+      await db.collection('users').doc(cred.user.uid).set({
+        uid: cred.user.uid,
+        name, email, role,
+        createdAt: serverTime()
+      });
+      showToast('Akun berhasil dibuat!','success');
+    } catch (err){
+      showToast(mapAuthError(err.code),'error');
+    } finally { showLoading(false); }
+  });
+}
+
+function mapAuthError(code){
+  switch(code){
+    case 'auth/invalid-email': return 'Format email tidak valid.';
+    case 'auth/user-not-found': return 'Akun tidak ditemukan.';
+    case 'auth/wrong-password': return 'Password salah.';
+    case 'auth/email-already-in-use': return 'Email sudah terdaftar.';
+    case 'auth/weak-password': return 'Password minimal 6 karakter.';
+    case 'auth/network-request-failed': return 'Jaringan tidak tersedia.';
+    default: return 'Terjadi kesalahan: '+code;
+  }
+}
+
+async function logout(){
+  try {
+    await firebase.auth().signOut();
+    state.user = null; state.userData = null;
+    state.progress = {}; state.finalResult = null; state.baselineResult = null;
+    showToast('Berhasil keluar','info');
+  } catch (e){ showToast('Gagal keluar','error'); }
+}
+
+// ============================================
+// USER DATA / PROGRESS
+// ============================================
+async function loadUserData(){
+  const snap = await db.collection('users').doc(state.user.uid).get();
+  if (snap.exists){
+    state.userData = snap.data();
+    state.user.role = snap.data().role || 'siswa';
+  } else {
+    // auto-provision fallback
+    await db.collection('users').doc(state.user.uid).set({
+      uid: state.user.uid, email: state.user.email,
+      name: state.user.displayName, role: 'siswa', createdAt: serverTime()
+    });
+    state.userData = { role: 'siswa' };
+    state.user.role = 'siswa';
+  }
+}
+
+async function loadModules(){
+  // Ambil dari Firestore bila ada, kalau tidak pakai default
+  try {
+    const snap = await db.collection('modules').orderBy('order').get();
+    if (!snap.empty){
+      state.modules = snap.docs.map(d=>d.data());
+      return;
+    }
+  } catch(e){ console.log('Pakai modules default',e); }
+  state.modules = DEFAULT_MODULES.map((m,i)=>({ ...m, order:i }));
+}
+
+async function loadProgress(){
+  const ref = db.collection('progress').doc(state.user.uid);
+  const snap = await ref.get();
+  state.progress = snap.exists ? (snap.data() || {}) : {};
+  state.baselineResult = state.progress.baseline || null;
+  state.finalResult   = state.progress.final    || null;
+}
+
+async function saveLessonDone(moduleId, lessonId){
+  const ref = db.collection('progress').doc(state.user.uid);
+  state.progress[moduleId] = state.progress[moduleId] || {};
+  state.progress[moduleId][lessonId] = true;
+  await ref.set({ ...state.progress, updatedAt: serverTime() }, { merge:true });
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
+const screens = ['dashboard','modules','module-detail','lesson','assessment','baseline','glosarium','admin','result'];
+function navigateTo(screen, payload){
+  screens.forEach(s=>{
+    const el = document.getElementById('screen-'+s);
+    if (el) el.classList.toggle('hidden', s !== screen);
+  });
+  switch(screen){
+    case 'dashboard': renderDashboard(); break;
+    case 'modules': renderModuleList(); break;
+    case 'module-detail': renderModuleDetail(payload); break;
+    case 'lesson': renderLesson(payload); break;
+    case 'assessment': renderAssessment(); break;
+    case 'baseline': renderBaseline(); break;
+    case 'glosarium': renderGlosarium(); break;
+    case 'admin': renderAdmin(); break;
+    case 'result': renderResult(payload); break;
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function bindNav(){
+  document.getElementById('btn-logout')?.addEventListener('click', logout);
+  document.querySelectorAll('[data-nav]').forEach(btn=>{
+    btn.addEventListener('click', ()=> navigateTo(btn.dataset.nav));
+  });
+}
+
+function renderHeader(){
+  const el = document.getElementById('user-info');
+  if (!el) return;
+  const role = state.user.role === 'guru' ? '👩‍🏫 Guru' : '👨‍🎓 Siswa';
+  el.innerHTML = `<strong>${state.user.displayName}</strong> · <span class="badge">${role}</span>`;
+  // Tampilkan menu admin hanya untuk guru
+  document.querySelectorAll('[data-role="guru"]').forEach(el=>{
+    el.classList.toggle('hidden', state.user.role !== 'guru');
+  });
+}
+
+// ============================================
+// DASHBOARD
+// ============================================
+function computeOverallProgress(){
+  const contentModules = state.modules.filter(m=>m.type==='content');
+  let totalLessons = 0, done = 0;
+  contentModules.forEach(m=>{
+    totalLessons += (m.lessons||[]).length;
+    const pm = state.progress[m.id] || {};
+    (m.lessons||[]).forEach(l=>{ if (pm[l.id]) done++; });
+  });
+  return { totalLessons, done, percent: totalLessons? Math.round(done*100/totalLessons) : 0 };
+}
+
+function renderDashboard(){
+  const root = document.getElementById('screen-dashboard');
+  if (!root) return;
+  const prog = computeOverallProgress();
+  const baselineTxt = state.baselineResult
+    ? `Skor awal: <strong>${state.baselineResult.score}/${state.baselineResult.total}</strong>`
+    : 'Belum mengerjakan asesmen awal.';
+  const finalTxt = state.finalResult
+    ? `Skor akhir: <strong>${state.finalResult.score}/${state.finalResult.total}</strong>`
+    : 'Belum mengerjakan asesmen akhir.';
+
+  root.innerHTML = `
+    <section class="hero">
+      <h2>Halo, ${escapeHtml(state.user.displayName)} 👋</h2>
+      <p>Selamat belajar <strong>Tata Kamera & Tata Cahaya</strong>.</p>
+    </section>
+    <section class="cards">
+      <div class="card">
+        <div class="card-label">Progres Belajar</div>
+        <div class="card-big">${prog.percent}%</div>
+        <div class="progress"><div class="progress-bar" style="width:${prog.percent}%"></div></div>
+        <div class="muted">${prog.done} dari ${prog.totalLessons} pelajaran</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Asesmen Awal</div>
+        <div>${baselineTxt}</div>
+        <button class="btn btn-secondary" data-nav="baseline">${state.baselineResult?'Ulangi':'Mulai'}</button>
+      </div>
+      <div class="card">
+        <div class="card-label">Asesmen Akhir</div>
+        <div>${finalTxt}</div>
+        <button class="btn btn-primary" data-nav="assessment">${state.finalResult?'Ulangi':'Mulai'}</button>
+      </div>
+    </section>
+    <section class="quick-actions">
+      <button class="btn" data-nav="modules">📚 Mulai Modul</button>
+      <button class="btn" data-nav="glosarium">📖 Glosarium</button>
+      <button class="btn" data-role="guru" data-nav="admin">⚙️ Dashboard Guru</button>
+    </section>
+  `;
+  // Re-bind setelah re-render
+  root.querySelectorAll('[data-nav]').forEach(btn=>{
+    btn.addEventListener('click', ()=> navigateTo(btn.dataset.nav));
+  });
+  if (state.user.role !== 'guru'){
+    root.querySelectorAll('[data-role="guru"]').forEach(b=>b.classList.add('hidden'));
+  }
+}
+
+// ============================================
+// MODULE LIST
+// ============================================
+function renderModuleList(){
+  const root = document.getElementById('screen-modules');
+  if (!root) return;
+  const cards = state.modules.map(m=>{
+    const lessons = m.lessons || [];
+    const pm = state.progress[m.id] || {};
+    const doneCount = lessons.filter(l=>pm[l.id]).length;
+    const pct = lessons.length ? Math.round(doneCount*100/lessons.length) : (pm._done?100:0);
+    return `
+      <div class="module-card" data-module="${m.id}">
+        <div class="mc-icon">${m.icon||'📘'}</div>
+        <div class="mc-body">
+          <div class="mc-title">${escapeHtml(m.title)}</div>
+          <div class="mc-tp">${m.tp||''}</div>
+          <div class="mc-desc">${escapeHtml(m.desc||'')}</div>
+          <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
+          <div class="muted">${lessons.length? (doneCount+' / '+lessons.length+' pelajaran') : (m.type==='baseline'?'Asesmen Awal':(m.type==='final'?'Asesmen Akhir':''))}</div>
+        </div>
+      </div>`;
+  }).join('');
+  root.innerHTML = `
+    <div class="page-head">
+      <button class="btn btn-ghost" data-nav="dashboard">← Dashboard</button>
+      <h2>Daftar Modul</h2>
+    </div>
+    <div class="module-grid">${cards}</div>
+  `;
+  root.querySelectorAll('[data-module]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.module;
+      const m = state.modules.find(x=>x.id===id);
+      if (!m) return;
+      if (m.type==='baseline') navigateTo('baseline');
+      else if (m.type==='final') navigateTo('assessment');
+      else navigateTo('module-detail', id);
+    });
+  });
+  root.querySelectorAll('[data-nav]').forEach(b=> b.addEventListener('click', ()=>navigateTo(b.dataset.nav)));
+}
+
+// ============================================
+// MODULE DETAIL
+// ============================================
+function renderModuleDetail(moduleId){
+  state.currentModuleId = moduleId;
+  const m = state.modules.find(x=>x.id===moduleId);
+  const root = document.getElementById('screen-module-detail');
+  if (!m || !root) { navigateTo('modules'); return; }
+  const pm = state.progress[m.id] || {};
+  const rows = (m.lessons||[]).map((l,i)=>`
+    <li class="lesson-row" data-idx="${i}">
+      <span class="lr-num">${i+1}</span>
+      <span class="lr-title">${escapeHtml(l.title)}</span>
+      <span class="lr-status">${pm[l.id]?'✅':'○'}</span>
+    </li>`).join('');
+  root.innerHTML = `
+    <div class="page-head">
+      <button class="btn btn-ghost" data-nav="modules">← Modul</button>
+      <h2>${m.icon||''} ${escapeHtml(m.title)}</h2>
+    </div>
+    <p class="muted">${escapeHtml(m.desc||'')}</p>
+    <ul class="lesson-list">${rows || '<li class="muted">Belum ada pelajaran.</li>'}</ul>
+  `;
+  root.querySelectorAll('.lesson-row').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      state.currentLessonIndex = parseInt(row.dataset.idx,10);
+      navigateTo('lesson', { moduleId, idx: state.currentLessonIndex });
+    });
+  });
+  root.querySelectorAll('[data-nav]').forEach(b=> b.addEventListener('click', ()=>navigateTo(b.dataset.nav)));
+}
+
+// ============================================
+// LESSON VIEW
+// ============================================
+function renderLesson({ moduleId, idx }){
+  const m = state.modules.find(x=>x.id===moduleId);
+  const root = document.getElementById('screen-lesson');
+  if (!m || !root) { navigateTo('modules'); return; }
+  const lessons = m.lessons || [];
+  const lesson = lessons[idx];
+  if (!lesson){ navigateTo('module-detail', moduleId); return; }
+  const isLast = idx >= lessons.length-1;
+  const isFirst = idx <= 0;
+
+  root.innerHTML = `
+    <div class="page-head">
+      <button class="btn btn-ghost" id="back-to-mod">← ${escapeHtml(m.title)}</button>
+      <h2>${escapeHtml(lesson.title)}</h2>
+    </div>
+    <article class="lesson-body">${lesson.body}</article>
+    <div class="lesson-nav">
+      <button class="btn" id="prev-lesson" ${isFirst?'disabled':''}>← Sebelumnya</button>
+      <button class="btn btn-primary" id="done-lesson">✅ Tandai Selesai</button>
+      <button class="btn" id="next-lesson" ${isLast?'disabled':''}>Berikutnya →</button>
+    </div>
+  `;
+  document.getElementById('back-to-mod').onclick = ()=> navigateTo('module-detail', moduleId);
+  document.getElementById('prev-lesson').onclick = ()=> navigateTo('lesson', { moduleId, idx: idx-1 });
+  document.getElementById('next-lesson').onclick = ()=> navigateTo('lesson', { moduleId, idx: idx+1 });
+  document.getElementById('done-lesson').onclick = async ()=>{
+    await saveLessonDone(moduleId, lesson.id);
+    showToast('Pelajaran ditandai selesai ✨','success');
+    if (!isLast) navigateTo('lesson', { moduleId, idx: idx+1 });
+    else navigateTo('module-detail', moduleId);
+  };
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+<!-- « AKHIR PART 6 » — Lanjut Part 7: Assessment + Glosarium + Result -->
+<!-- « MULAI PART 7 » -->
+// ============================================
+// BASELINE — Asesmen Awal (ringkas)
+// ============================================
+let _baselineSession = null;
+function renderBaseline(){
+  const root = document.getElementById('screen-baseline');
+  if (!root) return;
+  if (!_baselineSession){
+    const qs = shuffle(BASELINE_QUESTIONS.map(q=>({
+      ...q,
+      _opts: shuffleOptions(q.options, q.correct)
+    })));
+    _baselineSession = { idx:0, questions: qs, answers: new Array(qs.length).fill(null), startedAt: Date.now() };
+  }
+  const s = _baselineSession;
+  const q = s.questions[s.idx];
+  const total = s.questions.length;
+  root.innerHTML = `
+    <div class="page-head">
+      <button class="btn btn-ghost" id="bl-back">← Dashboard</button>
+      <h2>Asesmen Awal</h2>
+    </div>
+    <div class="muted">Soal ${s.idx+1} dari ${total}</div>
+    <div class="progress"><div class="progress-bar" style="width:${Math.round((s.idx)*100/total)}%"></div></div>
+    <div class="quiz-card">
+      <p class="q-text">${escapeHtml(q.q)}</p>
+      <div class="q-opts">
+        ${q._opts.map((o,i)=>`
+          <button class="quiz-opt ${s.answers[s.idx]===i?'selected':''}" data-i="${i}">${String.fromCharCode(65+i)}. ${escapeHtml(o.text)}</button>
+        `).join('')}
+      </div>
+      <div class="quiz-nav">
+        <button class="btn" id="bl-prev" ${s.idx===0?'disabled':''}>← Sebelumnya</button>
+        ${s.idx===total-1
+          ? `<button class="btn btn-primary" id="bl-submit">Selesai →</button>`
+          : `<button class="btn btn-primary" id="bl-next">Berikutnya →</button>`}
+      </div>
+    </div>`;
+  root.querySelectorAll('.quiz-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      s.answers[s.idx] = parseInt(btn.dataset.i,10);
+      renderBaseline();
+    });
+  });
+  document.getElementById('bl-back')?.addEventListener('click', ()=>{ _baselineSession=null; navigateTo('dashboard'); });
+  document.getElementById('bl-prev')?.addEventListener('click', ()=>{ if (s.idx>0){ s.idx--; renderBaseline(); } });
+  document.getElementById('bl-next')?.addEventListener('click', ()=>{ if (s.idx<total-1){ s.idx++; renderBaseline(); } });
+  document.getElementById('bl-submit')?.addEventListener('click', submitBaseline);
+}
+
+async function submitBaseline(){
+  const s = _baselineSession; if (!s) return;
+  let score = 0;
+  const detailed = s.questions.map((q,i)=>{
+    const selIdx = s.answers[i];
+    const selOpt = selIdx!=null ? q._opts[selIdx] : null;
+    const correct = selOpt ? selOpt.isCorrect : false;
+    if (correct) score++;
+    return { qid:q.id, selectedText: selOpt?.text||null, correct };
+  });
+  const result = { score, total:s.questions.length, answers:detailed, timestamp: Date.now() };
+  // Simpan ke progress.baseline
+  await db.collection('progress').doc(state.user.uid).set({ baseline: result, updatedAt: serverTime() }, { merge:true });
+  state.baselineResult = result;
+  _baselineSession = null;
+  navigateTo('result', { type:'baseline', result });
+}
+
+// ============================================
+// ASESMEN AKHIR — 20 Soal A–E
+// ============================================
+let _finalSession = null;
+function renderAssessment(){
+  const root = document.getElementById('screen-assessment');
+  if (!root) return;
+  if (!_finalSession){
+    const qs = shuffle(FINAL_ASSESSMENT_QUESTIONS.map(q=>({
+      ...q,
+      _opts: shuffleOptions(q.options, q.correct)
+    })));
+    _finalSession = { idx:0, questions: qs, answers: new Array(qs.length).fill(null), startedAt: Date.now() };
+  }
+  const s = _finalSession;
+  const q = s.questions[s.idx];
+  const total = s.questions.length;
+  const answered = s.answers.filter(x=>x!=null).length;
+
+  root.innerHTML = `
+    <div class="page-head">
+      <button class="btn btn-ghost" id="as-back">← Dashboard</button>
+      <h2>Asesmen Akhir</h2>
+    </div>
+    <div class="muted">Soal ${s.idx+1} dari ${total} · Terjawab ${answered}/${total}</div>
+    <div class="progress"><div class="progress-bar" style="width:${Math.round((s.idx)*100/total)}%"></div></div>
+    <div class="quiz-card">
+      <div class="q-tags"><span class="tag">${q.tp||''}</span> <span class="tag tag-alt">${q.bloom||''}</span></div>
+      <p class="q-text">${escapeHtml(q.q)}</p>
+      <div class="q-opts">
+        ${q._opts.map((o,i)=>`
+          <button class="quiz-opt ${s.answers[s.idx]===i?'selected':''}" data-i="${i}">${String.fromCharCode(65+i)}. ${escapeHtml(o.text)}</button>
+        `).join('')}
+      </div>
+      <div class="quiz-nav">
+        <button class="btn" id="as-prev" ${s.idx===0?'disabled':''}>← Sebelumnya</button>
+        ${s.idx===total-1
+          ? `<button class="btn btn-primary" id="as-submit">Kumpulkan →</button>`
+          : `<button class="btn btn-primary" id="as-next">Berikutnya →</button>`}
+      </div>
+      <div class="q-jump">
+        ${s.questions.map((_,i)=>`<button class="jump ${i===s.idx?'active':''} ${s.answers[i]!=null?'done':''}" data-j="${i}">${i+1}</button>`).join('')}
+      </div>
+    </div>`;
+  root.querySelectorAll('.quiz-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      s.answers[s.idx] = parseInt(btn.dataset.i,10);
+      renderAssessment();
+    });
+  });
+  root.querySelectorAll('.jump').forEach(b=>{
+    b.addEventListener('click', ()=>{ s.idx = parseInt(b.dataset.j,10); renderAssessment(); });
+  });
+  document.getElementById('as-back')?.addEventListener('click', ()=>{
+    if (confirm('Keluar dari asesmen? Jawaban belum disimpan.')){ _finalSession=null; navigateTo('dashboard'); }
+  });
+  document.getElementById('as-prev')?.addEventListener('click', ()=>{ if (s.idx>0){ s.idx--; renderAssessment(); } });
+  document.getElementById('as-next')?.addEventListener('click', ()=>{ if (s.idx<total-1){ s.idx++; renderAssessment(); } });
+  document.getElementById('as-submit')?.addEventListener('click', submitAssessment);
+}
+
+async function submitAssessment(){
+  const s = _finalSession; if (!s) return;
+  const unanswered = s.answers.filter(x=>x==null).length;
+  if (unanswered>0 && !confirm(`Masih ada ${unanswered} soal yang belum dijawab. Tetap kumpulkan?`)) return;
+
+  let score = 0;
+  const detailed = s.questions.map((q,i)=>{
+    const selIdx = s.answers[i];
+    const selOpt = selIdx!=null ? q._opts[selIdx] : null;
+    const correctOpt = q._opts.find(o=>o.isCorrect);
+    const correct = selOpt ? selOpt.isCorrect : false;
+    if (correct) score++;
+    return {
+      qid: q.id, tp:q.tp, bloom:q.bloom,
+      question: q.q,
+      selectedText: selOpt?.text || null,
+      correctText: correctOpt?.text || '',
+      explanation: q.expl || '',
+      allOptions: q._opts.map(o=>o.text),
+      correct
+    };
+  });
+  const total = s.questions.length;
+  const percent = Math.round(score*100/total);
+  const attempt = {
+    userId: state.user.uid,
+    userName: state.user.displayName,
+    score, total, percent,
+    startedAt: s.startedAt,
+    completedAt: Date.now(),
+    answers: detailed
+  };
+
+  // Simpan attempt (log lengkap) & final terbaru
+  try {
+    await db.collection('finalAttempts').add({ ...attempt, serverAt: serverTime() });
+    const prevCount = (state.progress.finalAttemptsCount || 0) + 1;
+    await db.collection('progress').doc(state.user.uid).set({
+      final: attempt,
+      finalAttemptsCount: prevCount,
+      updatedAt: serverTime()
+    }, { merge:true });
+    state.finalResult = attempt;
+    state.progress.finalAttemptsCount = prevCount;
+  } catch(e){ console.error(e); showToast('Gagal menyimpan hasil','error'); }
+
+  _finalSession = null;
+  navigateTo('result', { type:'final', result: attempt });
+}
+
+// Util: bungkus options jadi { text, isCorrect }, lalu acak
+function shuffleOptions(options, correctIdx){
+  const arr = options.map((t,i)=>({ text:t, isCorrect: i===correctIdx }));
+  return shuffle(arr);
+}
+
+// ============================================
+// HASIL + PEMBAHASAN
+// ============================================
+function renderResult(payload){
+  const root = document.getElementById('screen-result');
+  if (!root || !payload) { navigateTo('dashboard'); return; }
+  const r = payload.result;
+  const isFinal = payload.type === 'final';
+  const pct = r.percent ?? Math.round(r.score*100/r.total);
+  const pass = pct >= 70;
+  const mood = pass ? '🎉' : '💪';
+  const grade = pct>=85?'A':pct>=75?'B':pct>=60?'C':pct>=50?'D':'E';
+
+  root.innerHTML = `
+    <div class="page-head">
+      <button class="btn btn-ghost" data-nav="dashboard">← Dashboard</button>
+      <h2>Hasil ${isFinal?'Asesmen Akhir':'Asesmen Awal'}</h2>
+    </div>
+    <section class="result-hero">
+      <div class="result-score ${pass?'pass':'fail'}">
+        <div class="rs-big">${pct}%</div>
+        <div class="rs-sub">${r.score} / ${r.total} benar · Nilai ${grade} ${mood}</div>
+      </div>
+      <p class="muted">${pass
+        ? 'Selamat! Kamu memenuhi standar minimum (≥ 70%).'
+        : 'Belum memenuhi standar minimum. Boleh diulang — pelajari lagi modulnya ya.'}</p>
+      <div class="result-actions">
+        ${isFinal ? `<button class="btn btn-primary" id="btn-review">📘 LIHAT PEMBAHASAN</button>` : ''}
+        <button class="btn" data-nav="${isFinal?'assessment':'baseline'}">🔁 Ulangi</button>
+        <button class="btn btn-ghost" data-nav="dashboard">Selesai</button>
+      </div>
+    </section>
+    <section id="review-box" class="review-box hidden"></section>
+  `;
+  root.querySelectorAll('[data-nav]').forEach(b=> b.addEventListener('click', ()=>navigateTo(b.dataset.nav)));
+  if (isFinal){
+    document.getElementById('btn-review')?.addEventListener('click', ()=>{
+      const rb = document.getElementById('review-box');
+      rb.classList.remove('hidden');
+      rb.innerHTML = renderReview(r);
+      rb.scrollIntoView({ behavior:'smooth' });
+    });
+  }
+}
+
+function renderReview(r){
+  const items = (r.answers||[]).map((a,i)=>`
+    <div class="review-item ${a.correct?'ok':'no'}">
+      <div class="ri-head">
+        <span class="ri-num">${i+1}</span>
+        <span class="tag">${a.tp||''}</span>
+        <span class="tag tag-alt">${a.bloom||''}</span>
+        <span class="ri-flag">${a.correct?'✅ Benar':'❌ Salah'}</span>
+      </div>
+      <p class="ri-q">${escapeHtml(a.question||'')}</p>
+      <ul class="ri-opts">
+        ${(a.allOptions||[]).map(t=>{
+          const isSel = (t===a.selectedText);
+          const isCor = (t===a.correctText);
+          const cls = isCor ? 'cor' : (isSel ? 'sel' : '');
+          return `<li class="${cls}">${escapeHtml(t)}${isCor?' ✔️':''}${isSel && !isCor?' ← jawabanmu':''}</li>`;
+        }).join('')}
+      </ul>
+      ${a.explanation ? `<div class="ri-expl"><strong>Pembahasan:</strong> ${markdownInline(a.explanation)}</div>` : ''}
+    </div>`).join('');
+  return `<h3>📘 Pembahasan Soal</h3>${items}`;
+}
+
+// Mini-markdown: **bold**, *italic*, `code`
+function markdownInline(s){
+  let t = escapeHtml(s);
+  t = t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  t = t.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  t = t.replace(/`(.+?)`/g,'<code>$1</code>');
+  return t;
+}
+
+// ============================================
+// GLOSARIUM
+// ============================================
+let _glossaryQuery = '';
+function renderGlosarium(){
+  const root = document.getElementById('screen-glosarium');
+  if (!root) return;
+  const q = _glossaryQuery.trim().toLowerCase();
+  const list = (typeof GLOSSARY_DATA !== 'undefined' ? GLOSSARY_DATA : [])
+    .filter(it => !q || it.term.toLowerCase().includes(q) || (it.def||'').toLowerCase().includes(q))
+    .sort((a,b)=> a.term.localeCompare(b.term));
+  root.innerHTML = `
+    <div class="page-head">
+      <button class="btn btn-ghost" data-nav="dashboard">← Dashboard</button>
+      <h2>📖 Glosarium</h2>
+    </div>
+    <input id="gloss-search" class="input" placeholder="Cari istilah… (mis. aperture, kelvin)" value="${escapeHtml(_glossaryQuery)}" />
+    <div class="gloss-count muted">${list.length} istilah</div>
+    <div class="gloss-list">
+      ${list.map(it=>`
+        <div class="gloss-item">
+          <div class="gi-term">${escapeHtml(it.term)}</div>
+          <div class="gi-def">${markdownInline(it.def||'')}</div>
+          ${it.tp ? `<div class="gi-tp"><span class="tag">${it.tp}</span></div>` : ''}
+        </div>`).join('') || '<div class="muted">Tidak ada hasil.</div>'}
+    </div>
+  `;
+  document.getElementById('gloss-search').addEventListener('input', (e)=>{
+    _glossaryQuery = e.target.value;
+    const list2 = (typeof GLOSSARY_DATA !== 'undefined' ? GLOSSARY_DATA : [])
+      .filter(it => !_glossaryQuery || it.term.toLowerCase().includes(_glossaryQuery.toLowerCase()) || (it.def||'').toLowerCase().includes(_glossaryQuery.toLowerCase()));
+    document.querySelector('.gloss-count').textContent = `${list2.length} istilah`;
+    const cont = document.querySelector('.gloss-list');
+    cont.innerHTML = list2.sort((a,b)=>a.term.localeCompare(b.term)).map(it=>`
+      <div class="gloss-item">
+        <div class="gi-term">${escapeHtml(it.term)}</div>
+        <div class="gi-def">${markdownInline(it.def||'')}</div>
+        ${it.tp ? `<div class="gi-tp"><span class="tag">${it.tp}</span></div>` : ''}
+      </div>`).join('') || '<div class="muted">Tidak ada hasil.</div>';
+  });
+  root.querySelectorAll('[data-nav]').forEach(b=> b.addEventListener('click', ()=>navigateTo(b.dataset.nav)));
+}
+<!-- « AKHIR PART 7 » — Lanjut Part 8: Admin, Export CSV, Service Worker, Manifest. -->
+<!-- « MULAI PART 8 » -->
+// ============================================
+// ADMIN (GURU) — Dashboard Guru
+// ============================================
+let _adminTab = 'students';
+function renderAdmin(){
+  if (state.user.role !== 'guru'){ navigateTo('dashboard'); return; }
+  const root = document.getElementById('screen-admin');
+  if (!root) return;
+  root.innerHTML = `
+    <div class="page-head">
+      <button class="btn btn-ghost" data-nav="dashboard">← Dashboard</button>
+      <h2>⚙️ Dashboard Guru</h2>
+    </div>
+    <div class="admin-tabs">
+      <button class="tab ${_adminTab==='students'?'active':''}" data-tab="students">👥 Siswa</button>
+      <button class="tab ${_adminTab==='attempts'?'active':''}" data-tab="attempts">📝 Riwayat Asesmen</button>
+      <button class="tab ${_adminTab==='modules'?'active':''}" data-tab="modules">📚 Modul</button>
+    </div>
+    <div id="admin-body"></div>
+  `;
+  root.querySelectorAll('.tab').forEach(b=>{
+    b.addEventListener('click', ()=>{ _adminTab = b.dataset.tab; renderAdmin(); });
+  });
+  root.querySelectorAll('[data-nav]').forEach(b=> b.addEventListener('click', ()=>navigateTo(b.dataset.nav)));
+  if (_adminTab==='students') renderAdminStudents();
+  else if (_adminTab==='attempts') renderAdminAttempts();
+  else renderAdminModules();
+}
+
+async function renderAdminStudents(){
+  const body = document.getElementById('admin-body');
+  body.innerHTML = '<div class="muted">Memuat siswa…</div>';
+  try {
+    const [usersSnap, progSnap] = await Promise.all([
+      db.collection('users').get(),
+      db.collection('progress').get()
+    ]);
+    const progressMap = {}; progSnap.forEach(d=>{ progressMap[d.id] = d.data() || {}; });
+    const students = usersSnap.docs.map(d=>d.data()).filter(u=>u.role==='siswa')
+                              .sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+    const rows = students.map(u=>{
+      const p = progressMap[u.uid] || {};
+      const prog = computeStudentProgress(p);
+      const final = p.final;
+      return `
+        <tr>
+          <td>${escapeHtml(u.name||u.email)}</td>
+          <td>${escapeHtml(u.email||'')}</td>
+          <td><div class="progress small"><div class="progress-bar" style="width:${prog.percent}%"></div></div>
+              <span class="muted">${prog.done}/${prog.total} (${prog.percent}%)</span></td>
+          <td>${final ? `<strong>${final.percent}%</strong> <span class="muted">(${final.score}/${final.total})</span>` : '<span class="muted">belum</span>'}</td>
+          <td>${p.finalAttemptsCount||0}×</td>
+          <td><button class="btn btn-sm" data-view="${u.uid}">👁️ Detail</button></td>
+        </tr>`;
+    }).join('');
+    body.innerHTML = `
+      <div class="toolbar">
+        <button class="btn" id="btn-export-students">⬇️ Export CSV Siswa</button>
+      </div>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Nama</th><th>Email</th><th>Progres Belajar</th><th>Asesmen Akhir</th><th>Percobaan</th><th></th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="6" class="muted">Belum ada siswa.</td></tr>'}</tbody>
+      </table></div>`;
+    body.querySelectorAll('[data-view]').forEach(b=>{
+      b.addEventListener('click', ()=> showStudentDetail(b.dataset.view));
+    });
+    body.querySelector('#btn-export-students')?.addEventListener('click', ()=> exportStudentsCsv(students, progressMap));
+  } catch(e){
+    console.error(e);
+    body.innerHTML = '<div class="error">Gagal memuat data siswa.</div>';
+  }
+}
+
+function computeStudentProgress(p){
+  const mods = (state.modules.length ? state.modules : DEFAULT_MODULES).filter(m=>m.type==='content');
+  let total=0, done=0;
+  mods.forEach(m=>{
+    (m.lessons||[]).forEach(l=>{
+      total++;
+      if (p[m.id] && p[m.id][l.id]) done++;
+    });
+  });
+  return { total, done, percent: total? Math.round(done*100/total):0 };
+}
+
+async function showStudentDetail(uid){
+  const body = document.getElementById('admin-body');
+  body.innerHTML = '<div class="muted">Memuat detail…</div>';
+  try {
+    const [userSnap, progSnap, attemptsSnap] = await Promise.all([
+      db.collection('users').doc(uid).get(),
+      db.collection('progress').doc(uid).get(),
+      db.collection('finalAttempts').where('userId','==',uid).get()
+    ]);
+    const u = userSnap.data() || {};
+    const p = progSnap.data() || {};
+    const attempts = attemptsSnap.docs.map(d=>({ id:d.id, ...d.data() }))
+                                     .sort((a,b)=>(b.completedAt||0)-(a.completedAt||0));
+    const prog = computeStudentProgress(p);
+
+    body.innerHTML = `
+      <button class="btn btn-ghost" id="back-list">← Kembali ke daftar</button>
+      <h3>${escapeHtml(u.name||u.email||'Siswa')}</h3>
+      <p class="muted">${escapeHtml(u.email||'')}</p>
+      <div class="cards">
+        <div class="card">
+          <div class="card-label">Progres Belajar</div>
+          <div class="card-big">${prog.percent}%</div>
+          <div class="progress"><div class="progress-bar" style="width:${prog.percent}%"></div></div>
+          <div class="muted">${prog.done}/${prog.total} pelajaran</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Asesmen Awal</div>
+          <div>${p.baseline? `${p.baseline.score}/${p.baseline.total}`:'<span class="muted">belum</span>'}</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Asesmen Akhir (terbaru)</div>
+          <div>${p.final? `<strong>${p.final.percent}%</strong> · ${p.final.score}/${p.final.total}`:'<span class="muted">belum</span>'}</div>
+          <div class="muted">${attempts.length} percobaan</div>
+        </div>
+      </div>
+      <h4>Riwayat Asesmen Akhir</h4>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>#</th><th>Tanggal</th><th>Skor</th><th>%</th><th>Durasi</th><th></th></tr></thead>
+        <tbody>${attempts.map((a,i)=>`
+          <tr>
+            <td>${i+1}</td>
+            <td>${new Date(a.completedAt||0).toLocaleString('id-ID')}</td>
+            <td>${a.score}/${a.total}</td>
+            <td><strong>${a.percent}%</strong></td>
+            <td>${Math.round(((a.completedAt||0)-(a.startedAt||0))/1000)}d</td>
+            <td><button class="btn btn-sm" data-att="${a.id}">Lihat</button></td>
+          </tr>`).join('') || '<tr><td colspan="6" class="muted">Belum ada percobaan.</td></tr>'}</tbody>
+      </table></div>
+      <div class="toolbar" style="margin-top:12px">
+        <button class="btn" id="btn-export-att">⬇️ Export CSV Percobaan</button>
+      </div>
+    `;
+    body.querySelector('#back-list').onclick = ()=> renderAdminStudents();
+    body.querySelectorAll('[data-att]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const a = attempts.find(x=>x.id===b.dataset.att); if (!a) return;
+        navigateTo('result', { type:'final', result:a });
+      });
+    });
+    body.querySelector('#btn-export-att')?.addEventListener('click', ()=> exportAttemptsCsv(u, attempts));
+  } catch(e){
+    console.error(e);
+    body.innerHTML = '<div class="error">Gagal memuat detail siswa.</div>';
+  }
+}
+
+async function renderAdminAttempts(){
+  const body = document.getElementById('admin-body');
+  body.innerHTML = '<div class="muted">Memuat…</div>';
+  try {
+    const snap = await db.collection('finalAttempts').get();
+    const all = snap.docs.map(d=>({ id:d.id, ...d.data() }))
+                        .sort((a,b)=>(b.completedAt||0)-(a.completedAt||0));
+    const rows = all.map(a=>`
+      <tr>
+        <td>${escapeHtml(a.userName||a.userId||'-')}</td>
+        <td>${new Date(a.completedAt||0).toLocaleString('id-ID')}</td>
+        <td>${a.score}/${a.total}</td>
+        <td><strong>${a.percent}%</strong></td>
+        <td><button class="btn btn-sm" data-att="${a.id}">Lihat</button></td>
+      </tr>`).join('');
+    body.innerHTML = `
+      <div class="toolbar">
+        <button class="btn" id="btn-export-all">⬇️ Export Semua CSV</button>
+        <span class="muted">${all.length} percobaan</span>
+      </div>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Siswa</th><th>Tanggal</th><th>Skor</th><th>%</th><th></th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="5" class="muted">Belum ada percobaan.</td></tr>'}</tbody>
+      </table></div>`;
+    body.querySelectorAll('[data-att]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const a = all.find(x=>x.id===b.dataset.att); if (!a) return;
+        navigateTo('result', { type:'final', result:a });
+      });
+    });
+    body.querySelector('#btn-export-all')?.addEventListener('click', ()=> exportAttemptsCsv({name:'Semua Siswa'}, all));
+  } catch(e){
+    console.error(e);
+    body.innerHTML = '<div class="error">Gagal memuat percobaan.</div>';
+  }
+}
+
+function renderAdminModules(){
+  const body = document.getElementById('admin-body');
+  const rows = (state.modules.length?state.modules:DEFAULT_MODULES).map(m=>`
+    <tr>
+      <td>${m.icon||''} ${escapeHtml(m.title)}</td>
+      <td>${m.tp||''}</td>
+      <td>${m.type}</td>
+      <td>${(m.lessons||[]).length} pelajaran</td>
+    </tr>`).join('');
+  body.innerHTML = `
+    <p class="muted">Untuk tahap awal, modul di-hardcoded dalam kode. Untuk mengedit konten, ubah langsung <code>DEFAULT_MODULES</code> di Part 4, atau push dokumen ke collection <code>modules</code> di Firestore (field <code>order</code> untuk urutan).</p>
+    <div class="table-wrap"><table class="data-table">
+      <thead><tr><th>Modul</th><th>TP</th><th>Tipe</th><th>Pelajaran</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+
+// ============================================
+// EXPORT CSV
+// ============================================
+function csvEscape(v){
+  if (v==null) return '';
+  const s = String(v);
+  if (/[",\n]/.test(s)) return '"'+s.replace(/"/g,'""')+'"';
+  return s;
+}
+function downloadCsv(filename, rows){
+  const csv = rows.map(r=>r.map(csvEscape).join(',')).join('\n');
+  const blob = new Blob(['\ufeff'+csv], { type:'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+function exportStudentsCsv(students, progressMap){
+  const rows = [['Nama','Email','Pelajaran Selesai','Total Pelajaran','% Belajar','Asesmen Awal','Asesmen Akhir %','Jumlah Percobaan']];
+  students.forEach(u=>{
+    const p = progressMap[u.uid] || {};
+    const prog = computeStudentProgress(p);
+    rows.push([
+      u.name||'', u.email||'',
+      prog.done, prog.total, prog.percent,
+      p.baseline? `${p.baseline.score}/${p.baseline.total}`:'',
+      p.final? p.final.percent : '',
+      p.finalAttemptsCount||0
+    ]);
+  });
+  downloadCsv('siswa-tktc-'+new Date().toISOString().slice(0,10)+'.csv', rows);
+  showToast('CSV siswa diunduh','success');
+}
+function exportAttemptsCsv(user, attempts){
+  const rows = [['Siswa','Tanggal','Skor','Total','%','Durasi (detik)']];
+  attempts.forEach(a=>{
+    rows.push([
+      a.userName||user.name||'-',
+      new Date(a.completedAt||0).toISOString(),
+      a.score, a.total, a.percent,
+      Math.round(((a.completedAt||0)-(a.startedAt||0))/1000)
+    ]);
+  });
+  downloadCsv('asesmen-'+(user.name||'siswa').replace(/\s+/g,'_')+'-'+new Date().toISOString().slice(0,10)+'.csv', rows);
+  showToast('CSV percobaan diunduh','success');
+}
+
+// ============================================
+// TOAST
+// ============================================
+function showToast(msg, type='info'){
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(), 3500);
+}
+
+// ============================================
+// SERVICE WORKER
+// ============================================
+if ('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(e=>console.log('SW error:',e));
+}
+
+// ============================================
+// INIT
+// ============================================
+initApp();
+</script>
+</body>
+</html>
+<!-- « AKHIR PART 8 » — index.html selesai. -->
+ 
