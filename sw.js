@@ -1,5 +1,5 @@
 // sw.js — Service Worker sederhana untuk offline basic caching
-const CACHE = 'tktc-kartini-v1';
+const CACHE = 'tktc-kartini-v2';
 const ASSETS = [
   './',
   './index.html',
